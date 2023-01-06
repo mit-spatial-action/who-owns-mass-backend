@@ -18,18 +18,47 @@ class Attorneys(models.Model):
     geometry = models.TextField(blank=True, null=True)  # This field type is a guess.
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'attorneys'
 
+    def __str__(self):
+        if self.name:
+            return str(self.id) + ": [" + self.name + ", " + self.bar + "]"
+        elif self.bar:
+            return str(self.id) + ": [" + self.bar + "]"
+        else: 
+            return str(self.id)
 
 class Defendants(models.Model):
     name = models.TextField(blank=True, null=True)
     docket = models.TextField(blank=True, null=True)
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'defendants'
         unique_together = (('docket', 'name'),)
+    
+    def __str__(self):
+        if self.name:
+            return str(self.id) + ": [" + self.name + "]"
+        else:
+            return str(self.id)
+
+
+class Plaintiffs(models.Model):
+    name = models.TextField(blank=True, null=True)
+    docket = models.TextField(blank=True, null=True)
+
+    class Meta:
+        managed = True
+        db_table = 'plaintiffs'
+        unique_together = (('docket', 'name'),)
+    
+    def __str__(self):
+        if self.name:
+            return str(self.id) + ": [" + self.name + "]"
+        else:
+            return str(self.id)
 
 
 class Docket(models.Model):
@@ -38,10 +67,12 @@ class Docket(models.Model):
     docket = models.TextField(blank=True, null=True)
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'docket'
         unique_together = (('docket', 'date', 'text'),)
 
+    def __str__(self):
+        return str(self.id) + ": [" + self.docket + "]"
 
 class Events(models.Model):
     date = models.DateField(blank=True, null=True)
@@ -53,10 +84,12 @@ class Events(models.Model):
     docket = models.TextField(blank=True, null=True)
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'events'
         unique_together = (('docket', 'date', 'locality', 'location', 'result', 'session', 'type'),)
 
+    def __str__(self):
+        return str(self.id) + ": [" + self.docket + "]"
 
 class Filings(models.Model):
     street = models.TextField(blank=True, null=True)
@@ -82,18 +115,8 @@ class Filings(models.Model):
     geometry = models.TextField(blank=True, null=True)  # This field type is a guess.
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'filings'
-
-
-class FilingsToMetadata(models.Model):
-    filing_id = models.TextField(blank=True, null=True)
-    filing = models.TextField(blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'filings_to_metadata'
-        unique_together = (('filing_id', 'filing'),)
 
 
 class Judgments(models.Model):
@@ -105,39 +128,8 @@ class Judgments(models.Model):
     docket = models.TextField(blank=True, null=True)
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'judgments'
         unique_together = (('docket', 'date', 'type', 'method', 'for_field', 'against'),)
 
 
-class Metadata(models.Model):
-    id = models.TextField(unique=True, blank=True, null=False, primary_key=True)
-    time = models.DateTimeField(blank=True, null=True)
-    ip = models.TextField(blank=True, null=True)
-    user = models.TextField(blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'metadata'
-
-
-class Plaintiffs(models.Model):
-    name = models.TextField(blank=True, null=True)
-    docket = models.TextField(blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'plaintiffs'
-        unique_together = (('docket', 'name'),)
-
-
-class SpatialRefSys(models.Model):
-    srid = models.IntegerField(primary_key=True)
-    auth_name = models.CharField(max_length=256, blank=True, null=True)
-    auth_srid = models.IntegerField(blank=True, null=True)
-    srtext = models.CharField(max_length=2048, blank=True, null=True)
-    proj4text = models.CharField(max_length=2048, blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'spatial_ref_sys'

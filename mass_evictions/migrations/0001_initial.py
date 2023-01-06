@@ -109,18 +109,6 @@ class Migration(migrations.Migration):
             },
         ),
         migrations.CreateModel(
-            name='FilingsToMetadata',
-            fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('filing_id', models.TextField(blank=True, null=True)),
-                ('filing', models.TextField(blank=True, null=True)),
-            ],
-            options={
-                'db_table': 'filings_to_metadata',
-                'managed': False,
-            },
-        ),
-        migrations.CreateModel(
             name='Judgments',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
@@ -133,19 +121,6 @@ class Migration(migrations.Migration):
             ],
             options={
                 'db_table': 'judgments',
-                'managed': False,
-            },
-        ),
-        migrations.CreateModel(
-            name='Metadata',
-            fields=[
-                ('id', models.TextField(blank=True, primary_key=True, serialize=False, unique=True)),
-                ('time', models.DateTimeField(blank=True, null=True)),
-                ('ip', models.TextField(blank=True, null=True)),
-                ('user', models.TextField(blank=True, null=True)),
-            ],
-            options={
-                'db_table': 'metadata',
                 'managed': False,
             },
         ),

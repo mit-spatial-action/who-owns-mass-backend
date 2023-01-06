@@ -20,6 +20,20 @@ Install Python dependencies:
 pip install requirements.txt
 ```
 
+## Update Database
+Run sql file `update_db.sql` either by running file or copy pasting each line and making sure the tables have been updated with an `id` column
+
 ```shell
-./manage.py migrate 
+psql \c eviction_db
+```
+```psql
+\dt
+\x on;
+select * from plaintiffs limit 5;
+```
+
+Migrate DB
+
+```shell
+./manage.py migrate     
 ```
