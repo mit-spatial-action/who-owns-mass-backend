@@ -100,8 +100,8 @@ class Filings(models.Model):
     file_date = models.DateField(blank=True, null=True)
     case_status = models.TextField(blank=True, null=True)
     close_date = models.DateField(blank=True, null=True)
-    ptf_bar = models.TextField(blank=True, null=True)
-    def_bar = models.TextField(blank=True, null=True)
+    ptf_bar = models.ForeignKey(Attorneys, related_name="plaintiff_attorney", on_delete=models.DO_NOTHING, null=True)
+    def_bar = models.ForeignKey(Attorneys, related_name="defendant_attorney", on_delete=models.DO_NOTHING, null=True)
     dispo = models.TextField(blank=True, null=True)
     dispo_date = models.DateField(blank=True, null=True)
     docket = models.TextField(unique=True, blank=True, null=True)
@@ -117,6 +117,10 @@ class Filings(models.Model):
     class Meta:
         managed = True
         db_table = 'filings'
+
+    def save(self, *args, **kwargs):
+        self.last_updated = self.last_updated.replace(tzinfo=None)
+        super(Filings, self).save(*args, **kwargs)
 
 
 class Judgments(models.Model):
