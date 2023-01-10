@@ -1,6 +1,29 @@
 from django.db import models
 
 
+class DocketMeta(models.Model):
+    docket = models.TextField(primary_key=True, db_index=True)
+
+
+class Docket(models.Model):
+    date = models.DateField(blank=True, null=True)
+    text = models.TextField(blank=True, null=True)
+    docket = models.ForeignKey(DocketMeta, null=True, on_delete=models.DO_NOTHING, related_name='docket_meta')
+
+    class Meta:
+        managed = True
+        db_table = 'docket'
+        unique_together = (('docket', 'date', 'text'),)
+
+    def __str__(self):
+        return str(self.docket.id) + ": [" + self.docket + "]"
+
+
+class DocketOrphans(models.Model):
+    docket = models.CharField(blank=True, null=True, max_length=500)
+    originator_model = models.CharField(blank=True, null=True, max_length=500)
+
+
 class Attorneys(models.Model):
     bar = models.TextField(unique=True, blank=True, null=True)
     name = models.TextField(blank=True, null=True)
@@ -31,7 +54,7 @@ class Attorneys(models.Model):
 
 class Defendants(models.Model):
     name = models.TextField(blank=True, null=True)
-    docket = models.TextField(blank=True, null=True)
+    docket = models.ForeignKey(DocketMeta, null=True, on_delete=models.DO_NOTHING, related_name='defendant_docket')
 
     class Meta:
         managed = True
@@ -47,7 +70,7 @@ class Defendants(models.Model):
 
 class Plaintiffs(models.Model):
     name = models.TextField(blank=True, null=True)
-    docket = models.TextField(blank=True, null=True)
+    docket = models.ForeignKey(DocketMeta, null=True, on_delete=models.DO_NOTHING, related_name='plaintiff_docket')
 
     class Meta:
         managed = True
@@ -61,19 +84,6 @@ class Plaintiffs(models.Model):
             return str(self.id)
 
 
-class Docket(models.Model):
-    date = models.DateField(blank=True, null=True)
-    text = models.TextField(blank=True, null=True)
-    docket = models.TextField(blank=True, null=True)
-
-    class Meta:
-        managed = True
-        db_table = 'docket'
-        unique_together = (('docket', 'date', 'text'),)
-
-    def __str__(self):
-        return str(self.id) + ": [" + self.docket + "]"
-
 class Events(models.Model):
     date = models.DateField(blank=True, null=True)
     session = models.TextField(blank=True, null=True)
@@ -81,7 +91,7 @@ class Events(models.Model):
     location = models.TextField(blank=True, null=True)
     type = models.TextField(blank=True, null=True)
     result = models.TextField(blank=True, null=True)
-    docket = models.TextField(blank=True, null=True)
+    docket = models.ForeignKey(DocketMeta, null=True, on_delete=models.DO_NOTHING, related_name='event_docket')
 
     class Meta:
         managed = True
@@ -100,11 +110,11 @@ class Filings(models.Model):
     file_date = models.DateField(blank=True, null=True)
     case_status = models.TextField(blank=True, null=True)
     close_date = models.DateField(blank=True, null=True)
-    ptf_bar = models.ForeignKey(Attorneys, related_name="plaintiff_attorney", on_delete=models.DO_NOTHING, null=True)
-    def_bar = models.ForeignKey(Attorneys, related_name="defendant_attorney", on_delete=models.DO_NOTHING, null=True)
+    ptf_bar = models.TextField(blank=True, null=True)
+    def_bar = models.TextField(blank=True, null=True)
     dispo = models.TextField(blank=True, null=True)
     dispo_date = models.DateField(blank=True, null=True)
-    docket = models.TextField(unique=True, blank=True, null=True)
+    docket = models.ForeignKey(DocketMeta, null=True, on_delete=models.DO_NOTHING, related_name='filing_docket')
     district = models.TextField(blank=True, null=True)
     last_updated = models.DateTimeField(blank=True, null=True)
     add1 = models.TextField(blank=True, null=True)
@@ -129,11 +139,10 @@ class Judgments(models.Model):
     method = models.TextField(blank=True, null=True)
     for_field = models.TextField(db_column='for', blank=True, null=True)  # Field renamed because it was a Python reserved word.
     against = models.TextField(blank=True, null=True)
-    docket = models.TextField(blank=True, null=True)
+    docket = models.ForeignKey(DocketMeta, null=True, on_delete=models.DO_NOTHING, related_name='judgment_docket')
 
     class Meta:
         managed = True
         db_table = 'judgments'
         unique_together = (('docket', 'date', 'type', 'method', 'for_field', 'against'),)
-
 
