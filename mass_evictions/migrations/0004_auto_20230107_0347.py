@@ -4,7 +4,7 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('mass_evictions', '0005_docketmeta_defendants_docket_fk_docket_docket_fk_and_more'),
+        ('mass_evictions', '0003_docketmeta_defendants_docket_fk_docket_docket_fk_and_more'),
     ]
 
     operations = [

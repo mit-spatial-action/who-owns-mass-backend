@@ -69,7 +69,7 @@ def reverse_func(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('mass_evictions', '0004_auto_20230106_2143'),
+        ('mass_evictions', '0002_unique_together'),
     ]
 
     operations = [
