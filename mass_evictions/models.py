@@ -106,8 +106,6 @@ class Filings(models.Model):
     file_date = models.DateField(blank=True, null=True)
     case_status = models.TextField(blank=True, null=True)
     close_date = models.DateField(blank=True, null=True)
-    ptf_bar_str = models.TextField(blank=True, null=True)
-    def_bar_str = models.TextField(blank=True, null=True)
     ptf_attorney = models.ForeignKey(Attorneys, null=True, on_delete=models.DO_NOTHING, related_name='filing_plaintiff_attorney')
     def_attorney = models.ForeignKey(Attorneys, null=True, on_delete=models.DO_NOTHING, related_name='filing_defendant_attorney')
     dispo = models.TextField(blank=True, null=True)
