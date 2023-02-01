@@ -46,12 +46,7 @@ class Attorneys(models.Model):
 
     def __str__(self):
         return self.bar
-        # if self.name:
-        #     return str(self.id) + ": [" + self.name + ", " + self.bar + "]"
-        # elif self.bar:
-        #     return str(self.id) + ": [" + self.bar + "]"
-        # else: 
-        #     return str(self.id)
+
 
 class Defendants(models.Model):
     name = models.TextField(blank=True, null=True)
@@ -111,12 +106,10 @@ class Filings(models.Model):
     file_date = models.DateField(blank=True, null=True)
     case_status = models.TextField(blank=True, null=True)
     close_date = models.DateField(blank=True, null=True)
-    ptf_bar = models.TextField(blank=True, null=True)
-    def_bar = models.TextField(blank=True, null=True)
-    # ptf_bar_str = models.TextField(blank=True, null=True)
-    # def_bar_str = models.TextField(blank=True, null=True)
-    # ptf_attorney = models.ForeignKey(Attorneys, null=True, on_delete=models.DO_NOTHING, related_name='filing_plaintiff_attorney'),
-    # def_attorney = models.ForeignKey(Attorneys, null=True, on_delete=models.DO_NOTHING, related_name='filing_defendant_attorney'),
+    ptf_bar_str = models.TextField(blank=True, null=True)
+    def_bar_str = models.TextField(blank=True, null=True)
+    ptf_attorney = models.ForeignKey(Attorneys, null=True, on_delete=models.DO_NOTHING, related_name='filing_plaintiff_attorney')
+    def_attorney = models.ForeignKey(Attorneys, null=True, on_delete=models.DO_NOTHING, related_name='filing_defendant_attorney')
     dispo = models.TextField(blank=True, null=True)
     dispo_date = models.DateField(blank=True, null=True)
     docket = models.ForeignKey(DocketMeta, null=True, on_delete=models.DO_NOTHING, related_name='filing_docket')
