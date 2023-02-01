@@ -1,6 +1,9 @@
 # mass-evictions
 Ongoing MIT DUSP research into housing precarity in Massachusetts.
 
+## DB Schema
+![mass_evictions schema](./schema.png)
+
 ## Setup
 Written in Python 3.10.2
 
