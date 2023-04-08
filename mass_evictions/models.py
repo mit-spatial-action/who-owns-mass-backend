@@ -16,7 +16,7 @@ class Docket(models.Model):
         unique_together = (('docket', 'date', 'text'),)
 
     def __str__(self):
-        return str(self.docket.id) + ": [" + self.docket + "]"
+        return str(self.docket.docket) + ": [" + self.docket.docket + "]"
 
 
 class DocketOrphans(models.Model):
