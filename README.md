@@ -40,3 +40,10 @@ Migrate DB
 ```shell
 ./manage.py migrate     
 ```
+
+to run Django shell (and make it nice)
+```
+./manage.py shell_plus
+```
+
+
