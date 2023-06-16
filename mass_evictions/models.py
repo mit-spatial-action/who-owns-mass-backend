@@ -4,6 +4,9 @@ from django.db import models
 class DocketMeta(models.Model):
     docket = models.TextField(primary_key=True, db_index=True)
 
+    class Meta:
+        db_table = 'docketmeta'
+
 
 class Docket(models.Model):
     date = models.DateField(blank=True, null=True)
@@ -22,6 +25,9 @@ class Docket(models.Model):
 class DocketOrphans(models.Model):
     docket = models.CharField(blank=True, null=True, max_length=500)
     originator_model = models.CharField(blank=True, null=True, max_length=500)
+
+    class Meta:
+        db_table = 'docketorphans'
 
 
 class Attorneys(models.Model):
