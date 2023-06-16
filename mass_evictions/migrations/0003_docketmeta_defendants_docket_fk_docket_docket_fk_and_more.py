@@ -76,16 +76,25 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='DocketOrphans',
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.BigAutoField(auto_created=True,
+                 primary_key=True, serialize=False, verbose_name='ID')),
                 ('docket', models.CharField(blank=True, null=True, max_length=500)),
-                ('originator_model', models.CharField(blank=True, null=True, max_length=500)),
-            ]
+                ('originator_model', models.CharField(
+                    blank=True, null=True, max_length=500)),
+            ],
+            options={
+                'db_table': 'docketorphans',
+            },
         ),
         migrations.CreateModel(
             name='DocketMeta',
             fields=[
-                ('docket', models.TextField(db_index=True, primary_key=True, serialize=False)),
+                ('docket', models.TextField(db_index=True,
+                 primary_key=True, serialize=False)),
             ],
+            options={
+                'db_table': 'docketmeta',
+            },
         ),
         migrations.AddField(
             model_name='defendants',
