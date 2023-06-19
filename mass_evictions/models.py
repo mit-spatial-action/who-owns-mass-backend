@@ -101,7 +101,8 @@ class Events(models.Model):
         unique_together = (('docket', 'date', 'locality', 'location', 'result', 'session', 'type'),)
 
     def __str__(self):
-        return str(self.id) + ": [" + self.docket + "]"
+        return str(self.id) + ": [" + self.docket.docket + "]"
+
 
 class Filings(models.Model):
     street = models.TextField(blank=True, null=True)
