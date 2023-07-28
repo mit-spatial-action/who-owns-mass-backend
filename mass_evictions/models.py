@@ -1,22 +1,25 @@
 from django.db import models
+from django.contrib.gis.db import models as geomodels
 
 
 class DocketMeta(models.Model):
     docket = models.TextField(primary_key=True, db_index=True)
 
     class Meta:
-        db_table = 'docketmeta'
+        db_table = "docketmeta"
 
 
 class Docket(models.Model):
     date = models.DateField(blank=True, null=True)
     text = models.TextField(blank=True, null=True)
-    docket = models.ForeignKey(DocketMeta, null=True, on_delete=models.DO_NOTHING, related_name='docket_meta')
+    docket = models.ForeignKey(
+        DocketMeta, null=True, on_delete=models.DO_NOTHING, related_name="docket_meta"
+    )
 
     class Meta:
         managed = True
-        db_table = 'docket'
-        unique_together = (('docket', 'date', 'text'),)
+        db_table = "docket"
+        unique_together = (("docket", "date", "text"),)
 
     def __str__(self):
         return str(self.docket.docket) + ": [" + self.docket.docket + "]"
@@ -27,7 +30,7 @@ class DocketOrphans(models.Model):
     originator_model = models.CharField(blank=True, null=True, max_length=500)
 
     class Meta:
-        db_table = 'docketorphans'
+        db_table = "docketorphans"
 
 
 class Attorneys(models.Model):
@@ -44,11 +47,12 @@ class Attorneys(models.Model):
     add_p = models.TextField(blank=True, null=True)
     match_type = models.TextField(blank=True, null=True)
     geocoder = models.TextField(blank=True, null=True)
-    geometry = models.TextField(blank=True, null=True)  # This field type is a guess.
+    # This field type is a guess.
+    geometry = models.TextField(blank=True, null=True)
 
     class Meta:
         managed = True
-        db_table = 'attorneys'
+        db_table = "attorneys"
 
     def __str__(self):
         return self.bar
@@ -56,13 +60,18 @@ class Attorneys(models.Model):
 
 class Defendants(models.Model):
     name = models.TextField(blank=True, null=True)
-    docket = models.ForeignKey(DocketMeta, null=True, on_delete=models.DO_NOTHING, related_name='defendant_docket')
+    docket = models.ForeignKey(
+        DocketMeta,
+        null=True,
+        on_delete=models.DO_NOTHING,
+        related_name="defendant_docket",
+    )
 
     class Meta:
         managed = True
-        db_table = 'defendants'
-        unique_together = (('docket', 'name'),)
-    
+        db_table = "defendants"
+        unique_together = (("docket", "name"),)
+
     def __str__(self):
         if self.name:
             return str(self.id) + ": [" + self.name + "]"
@@ -72,13 +81,18 @@ class Defendants(models.Model):
 
 class Plaintiffs(models.Model):
     name = models.TextField(blank=True, null=True)
-    docket = models.ForeignKey(DocketMeta, null=True, on_delete=models.DO_NOTHING, related_name='plaintiff_docket')
+    docket = models.ForeignKey(
+        DocketMeta,
+        null=True,
+        on_delete=models.DO_NOTHING,
+        related_name="plaintiff_docket",
+    )
 
     class Meta:
         managed = True
-        db_table = 'plaintiffs'
-        unique_together = (('docket', 'name'),)
-    
+        db_table = "plaintiffs"
+        unique_together = (("docket", "name"),)
+
     def __str__(self):
         if self.name:
             return str(self.id) + ": [" + self.name + "]"
@@ -93,12 +107,16 @@ class Events(models.Model):
     location = models.TextField(blank=True, null=True)
     type = models.TextField(blank=True, null=True)
     result = models.TextField(blank=True, null=True)
-    docket = models.ForeignKey(DocketMeta, null=True, on_delete=models.DO_NOTHING, related_name='event_docket')
+    docket = models.ForeignKey(
+        DocketMeta, null=True, on_delete=models.DO_NOTHING, related_name="event_docket"
+    )
 
     class Meta:
         managed = True
-        db_table = 'events'
-        unique_together = (('docket', 'date', 'locality', 'location', 'result', 'session', 'type'),)
+        db_table = "events"
+        unique_together = (
+            ("docket", "date", "locality", "location", "result", "session", "type"),
+        )
 
     def __str__(self):
         return str(self.id) + ": [" + self.docket.docket + "]"
@@ -113,11 +131,23 @@ class Filings(models.Model):
     file_date = models.DateField(blank=True, null=True)
     case_status = models.TextField(blank=True, null=True)
     close_date = models.DateField(blank=True, null=True)
-    ptf_attorney = models.ForeignKey(Attorneys, null=True, on_delete=models.DO_NOTHING, related_name='filing_plaintiff_attorney')
-    def_attorney = models.ForeignKey(Attorneys, null=True, on_delete=models.DO_NOTHING, related_name='filing_defendant_attorney')
+    ptf_attorney = models.ForeignKey(
+        Attorneys,
+        null=True,
+        on_delete=models.DO_NOTHING,
+        related_name="filing_plaintiff_attorney",
+    )
+    def_attorney = models.ForeignKey(
+        Attorneys,
+        null=True,
+        on_delete=models.DO_NOTHING,
+        related_name="filing_defendant_attorney",
+    )
     dispo = models.TextField(blank=True, null=True)
     dispo_date = models.DateField(blank=True, null=True)
-    docket = models.ForeignKey(DocketMeta, null=True, on_delete=models.DO_NOTHING, related_name='filing_docket')
+    docket = models.ForeignKey(
+        DocketMeta, null=True, on_delete=models.DO_NOTHING, related_name="filing_docket"
+    )
     district = models.TextField(blank=True, null=True)
     last_updated = models.DateTimeField(blank=True, null=True)
     add1 = models.TextField(blank=True, null=True)
@@ -125,11 +155,12 @@ class Filings(models.Model):
     add_p = models.TextField(blank=True, null=True)
     match_type = models.TextField(blank=True, null=True)
     geocoder = models.TextField(blank=True, null=True)
-    geometry = models.TextField(blank=True, null=True)  # This field type is a guess.
+    # This field type is a guess.
+    geometry = models.TextField(blank=True, null=True)
 
     class Meta:
         managed = True
-        db_table = 'filings'
+        db_table = "filings"
 
     def save(self, *args, **kwargs):
         self.last_updated = self.last_updated.replace(tzinfo=None)
@@ -140,12 +171,26 @@ class Judgments(models.Model):
     date = models.DateField(blank=True, null=True)
     type = models.TextField(blank=True, null=True)
     method = models.TextField(blank=True, null=True)
-    for_field = models.TextField(db_column='for', blank=True, null=True)  # Field renamed because it was a Python reserved word.
+    # Field renamed because it was a Python reserved word.
+    for_field = models.TextField(db_column="for", blank=True, null=True)
     against = models.TextField(blank=True, null=True)
-    docket = models.ForeignKey(DocketMeta, null=True, on_delete=models.DO_NOTHING, related_name='judgment_docket')
+    docket = models.ForeignKey(
+        DocketMeta,
+        null=True,
+        on_delete=models.DO_NOTHING,
+        related_name="judgment_docket",
+    )
 
     class Meta:
         managed = True
-        db_table = 'judgments'
-        unique_together = (('docket', 'date', 'type', 'method', 'for_field', 'against'),)
+        db_table = "judgments"
+        unique_together = (
+            ("docket", "date", "type", "method", "for_field", "against"),
+        )
 
+
+class Parcel(geomodels.Model):
+    object_id = models.IntegerField()
+    loc_id = models.CharField(max_length=100)
+    town_id = models.IntegerField()
+    geometry = geomodels.MultiPolygonField()
