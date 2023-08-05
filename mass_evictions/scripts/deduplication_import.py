@@ -62,7 +62,7 @@ def import_owners(filename, row_num=row_num_default):
                 "prop_id": str,
                 "loc_id": str,
                 "fy": int,
-                "use_code": int,
+                "use_code": str,
                 "city": str,
                 "owner1": str,
                 "own_addr": str,

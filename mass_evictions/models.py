@@ -209,7 +209,7 @@ class Owner(models.Model):
     prop_id = models.CharField(max_length=200)
     loc_id = models.CharField(max_length=200)
     fy = models.IntegerField()
-    use_code = models.IntegerField()
+    use_code = models.CharField(max_length=100)
     city = models.CharField(max_length=200)
     owner1 = models.CharField(max_length=500)
     own_addr = models.TextField()
