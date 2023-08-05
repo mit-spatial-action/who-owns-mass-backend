@@ -48,7 +48,7 @@ class Attorneys(models.Model):
     match_type = models.TextField(blank=True, null=True)
     geocoder = models.TextField(blank=True, null=True)
     # This field type is a guess.
-    geometry = models.TextField(blank=True, null=True)
+    geometry = geomodels.PointField(blank=True, null=True)
 
     class Meta:
         managed = True
@@ -156,7 +156,7 @@ class Filings(models.Model):
     match_type = models.TextField(blank=True, null=True)
     geocoder = models.TextField(blank=True, null=True)
     # This field type is a guess.
-    geometry = models.TextField(blank=True, null=True)
+    geometry = geomodels.PointField(blank=True, null=True)
 
     class Meta:
         managed = True
