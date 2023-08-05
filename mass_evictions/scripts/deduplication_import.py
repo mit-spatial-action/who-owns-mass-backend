@@ -5,8 +5,10 @@ import pandas as pd
 from config.settings import DEDUPLICATIONS_DIR
 from mass_evictions.models import Parcel, OwnerGroup, Owner, Corp
 
+row_num_default = 100000
 
-def import_parcels(filename, row_num=10000):
+
+def import_parcels(filename, row_num=row_num_default):
     parcels_file = os.path.join(DEDUPLICATIONS_DIR, filename)
     rows = 0
     while True:
@@ -46,10 +48,11 @@ def create_owner_objects(owner):
     )
 
 
-def import_owners(filename, row_num=10000):
+def import_owners(filename, row_num=row_num_default):
     owners_file = os.path.join(DEDUPLICATIONS_DIR, filename)
     rows = 0
     while True:
+        print("Getting the next %s to %s rows" % (str(rows), str(rows + row_num)))
         rows += row_num
         df = pd.read_csv(
             owners_file,
@@ -78,14 +81,15 @@ def import_owners(filename, row_num=10000):
 
 
 def create_corp_objects(corp):
-    group, _ = OwnerGroup.objects.get_or_create(id=owner["group_network"])
+    group, _ = OwnerGroup.objects.get_or_create(id=corp["group_network"])
     Corp.objects.create(id=corp["id"], name=corp["name"], group=group)
 
 
-def import_corps(filename, row_num=10000):
+def import_corps(filename, row_num=row_num_default):
     corps_file = os.path.join(DEDUPLICATIONS_DIR, filename)
     rows = 0
     while True:
+        print("Getting the next %s to %s rows" % (str(rows), str(rows + row_num)))
         rows += row_num
         df = pd.read_csv(
             corps_file,
