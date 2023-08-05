@@ -3,7 +3,7 @@ from tqdm import tqdm
 import geopandas as gpd
 import pandas as pd
 from config.settings import DEDUPLICATIONS_DIR
-from mass_evictions.models import Parcel, OwnerGroup, Owner
+from mass_evictions.models import Parcel, OwnerGroup, Owner, Corp
 
 
 def import_parcels(filename, row_num=10000):
@@ -75,3 +75,23 @@ def import_owners(filename, row_num=10000):
         )
         owners = df.to_dict("records")
         [create_owner_objects(owner) for owner in tqdm(owners)]
+
+
+def create_corp_objects(corp):
+    group, _ = OwnerGroup.objects.get_or_create(id=owner["group_network"])
+    Corp.objects.create(id=corp["id"], name=corp["name"], group=group)
+
+
+def import_corps(filename, row_num=10000):
+    corps_file = os.path.join(DEDUPLICATIONS_DIR, filename)
+    rows = 0
+    while True:
+        rows += row_num
+        df = pd.read_csv(
+            corps_file,
+            nrows=row_num,
+            sep="|",
+            converters={"id": str, "name": str, "group_network": str},
+        )
+        corps = df.to_dict("records")
+        [create_corp_objects(corp) for corp in tqdm(corps)]

@@ -223,7 +223,27 @@ class Owner(models.Model):
         OwnerGroup,
         null=True,
         on_delete=models.DO_NOTHING,
-        related_name="group",
+        related_name="owners",
     )
     id_corp = models.CharField(max_length=200)
     count = models.IntegerField()
+
+
+class Corps(models.Model):
+    id = models.CharField(
+        primary_key=True,
+        max_length=100,
+        null=False,
+    )
+    name = models.CharField(max_length=200, null=False)
+    group = models.ForeignKey(
+        OwnerGroup,
+        null=True,
+        on_delete=models.DO_NOTHING,
+        related_name="corps",
+    )
+
+    class Meta:
+        indexes = [
+            models.Index(fields=["id"]),
+        ]
