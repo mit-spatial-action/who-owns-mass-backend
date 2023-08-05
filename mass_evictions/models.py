@@ -229,7 +229,7 @@ class Owner(models.Model):
     count = models.IntegerField()
 
 
-class Corps(models.Model):
+class Corp(models.Model):
     id = models.CharField(
         primary_key=True,
         max_length=100,

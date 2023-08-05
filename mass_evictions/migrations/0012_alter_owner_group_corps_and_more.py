@@ -5,27 +5,42 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('mass_evictions', '0011_owner_ownergroup_and_more'),
+        ("mass_evictions", "0011_owner_ownergroup_and_more"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='owner',
-            name='group',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.DO_NOTHING, related_name='owners', to='mass_evictions.ownergroup'),
+            model_name="owner",
+            name="group",
+            field=models.ForeignKey(
+                null=True,
+                on_delete=django.db.models.deletion.DO_NOTHING,
+                related_name="owners",
+                to="mass_evictions.ownergroup",
+            ),
         ),
         migrations.CreateModel(
-            name='Corps',
+            name="Corp",
             fields=[
-                ('id', models.CharField(max_length=100, primary_key=True, serialize=False)),
-                ('name', models.CharField(max_length=200)),
-                ('group', models.ForeignKey(null=True, on_delete=django.db.models.deletion.DO_NOTHING, related_name='corps', to='mass_evictions.ownergroup')),
+                (
+                    "id",
+                    models.CharField(max_length=100, primary_key=True, serialize=False),
+                ),
+                ("name", models.CharField(max_length=200)),
+                (
+                    "group",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.DO_NOTHING,
+                        related_name="corps",
+                        to="mass_evictions.ownergroup",
+                    ),
+                ),
             ],
         ),
         migrations.AddIndex(
-            model_name='corps',
-            index=models.Index(fields=['id'], name='mass_evicti_id_566b10_idx'),
+            model_name="corp",
+            index=models.Index(fields=["id"], name="mass_evicti_id_566b10_idx"),
         ),
     ]
