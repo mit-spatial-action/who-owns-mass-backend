@@ -194,3 +194,36 @@ class Parcel(geomodels.Model):
     loc_id = models.CharField(max_length=100)
     town_id = models.IntegerField()
     geometry = geomodels.MultiPolygonField()
+
+
+class OwnerGroup(models.Model):
+    id = models.CharField(null=False, primary_key=True, max_length=200)
+
+    class Meta:
+        indexes = [
+            models.Index(fields=["id"]),
+        ]
+
+
+class Owner(models.Model):
+    prop_id = models.CharField(max_length=200)
+    loc_id = models.CharField(max_length=200)
+    fy = models.IntegerField()
+    use_code = models.IntegerField()
+    city = models.CharField(max_length=200)
+    owner1 = models.CharField(max_length=500)
+    own_addr = models.TextField()
+    own_city = models.CharField(max_length=200)
+    own_state = models.CharField(max_length=100)
+    own_zip = models.CharField(max_length=200)
+    co = models.CharField(max_length=200)
+    zip = models.CharField(max_length=200)
+    name_address = models.TextField()
+    group = models.ForeignKey(
+        OwnerGroup,
+        null=True,
+        on_delete=models.DO_NOTHING,
+        related_name="group",
+    )
+    id_corp = models.CharField(max_length=200)
+    count = models.IntegerField()
