@@ -82,7 +82,7 @@ def import_owners(filename, row_num=row_num_default):
 
 def create_corp_objects(corp):
     group, _ = OwnerGroup.objects.get_or_create(id=corp["group_network"])
-    Corp.objects.create(id=corp["id"], name=corp["name"], group=group)
+    Corp.objects.create(id=corp["id"], name=corp["entityname"], group=group)
 
 
 def import_corps(filename, row_num=row_num_default):
