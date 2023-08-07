@@ -86,7 +86,10 @@ def create_corp_objects(corp):
             existing_corp.name != corp["entityname"]
             or existing_corp.group.id != group.id
         ):
-            breakpoint()
+            raise ValueError(
+                "Corporation with ID %s already exists. Mismatched values expected: %s"
+                % (corp["id"], corp)
+            )
         else:
             pass
 
