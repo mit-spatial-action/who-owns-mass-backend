@@ -1,4 +1,4 @@
-# mass-evictions
+# who-owns-mass-backend
 Ongoing MIT DUSP research into housing precarity in Massachusetts.
 
 ## DB Schema
