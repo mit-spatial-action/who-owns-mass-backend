@@ -29,12 +29,12 @@ class Person(models.Model):
 
 
 class Address(models.Model):
-    street = models.TextField(blank=True, null=True)
-    state = models.TextField(blank=True, null=True)
-    city = models.TextField(blank=True, null=True)
-    zip = models.TextField(blank=True, null=True)
-    add1 = models.TextField(blank=True, null=True)
-    add2 = models.TextField(blank=True, null=True)
+    street = models.CharField(blank=True, null=True, max_length=200)
+    state = models.CharField(blank=True, null=True, max_length=50)
+    city = models.CharField(blank=True, null=True, max_length=50)
+    zip = models.CharField(blank=True, null=True, max_length=20)
+    add1 = models.CharField(blank=True, null=True, max_length=100)
+    add2 = models.CharField(blank=True, null=True, max_length=100)
     match_type = models.TextField(blank=True, null=True)
     geocoder = models.TextField(blank=True, null=True)
     geometry = models.TextField(blank=True, null=True)  # This field type is a guess.
@@ -45,6 +45,9 @@ class Company(models.Model):
     type = forms.MultipleChoiceField(choices=COMPANY_TYPES)
     people = models.ManyToManyField(Person)
     addresses = models.ManyToManyField(Address)
+    metacorp = models.ForeignKey(
+        MetaCorp, null=True, on_delete=models.DO_NOTHING, related_name="company_meta"
+    )
 
 
 class DocketMeta(models.Model):
