@@ -1,4 +1,50 @@
 from django.db import models
+from django import forms
+
+COMPANY_TYPES = (
+    ("landlord", "Landlord"),
+    ("law_firm", "Law Firm"),
+    ("property_management", "Property Management"),
+    ("unknown", "Unknown"),
+)
+
+
+class MetaCorp(models.Model):
+    """
+    The actual corporation that owns LLCs and LPs.
+    Usually requires a mix of programmatic and manual research.
+    """
+
+    name = models.CharField(blank=True, null=True, max_length=500)
+    type = forms.MultipleChoiceField(choices=COMPANY_TYPES)
+
+
+class Role(models.Model):
+    name = models.CharField(blank=False, null=True, max_length=500)
+
+
+class Person(models.Model):
+    name = models.CharField(blank=False, null=True, max_length=500)
+    roles = models.ManyToManyField(Role)
+
+
+class Address(models.Model):
+    street = models.TextField(blank=True, null=True)
+    state = models.TextField(blank=True, null=True)
+    city = models.TextField(blank=True, null=True)
+    zip = models.TextField(blank=True, null=True)
+    add1 = models.TextField(blank=True, null=True)
+    add2 = models.TextField(blank=True, null=True)
+    match_type = models.TextField(blank=True, null=True)
+    geocoder = models.TextField(blank=True, null=True)
+    geometry = models.TextField(blank=True, null=True)  # This field type is a guess.
+
+
+class Company(models.Model):
+    name = models.CharField(blank=True, null=True, max_length=500)
+    type = forms.MultipleChoiceField(choices=COMPANY_TYPES)
+    people = models.ManyToManyField(Person)
+    addresses = models.ManyToManyField(Address)
 
 
 class DocketMeta(models.Model):

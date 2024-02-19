@@ -46,4 +46,9 @@ to run Django shell (and make it nice)
 ./manage.py shell_plus
 ```
 
+## To visualize database schema
+```shell
+pip install pygraphviz
+python manage.py graph_models -a -g -o schema.png
+```
 
