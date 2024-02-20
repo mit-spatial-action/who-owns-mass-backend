@@ -1,5 +1,5 @@
 # who-owns-mass-backend
-Ongoing MIT DUSP research into housing precarity in Massachusetts.
+Django backend for who owns mass application.
 
 ## DB Schema
 ![mass_evictions schema](./schema.png)
