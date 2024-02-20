@@ -23,6 +23,11 @@ Install Python dependencies:
 pip install requirements.txt
 ```
 
+## Create a local settings file
+```shell
+cp config/settings/settings_local.example.py config/settings/settings_local.py
+```
+
 ## Update Database
 Run sql file `update_db.sql` either by running file or copy pasting each line and making sure the tables have been updated with an `id` column
 

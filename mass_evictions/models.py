@@ -1,5 +1,6 @@
 from django.db import models
 from django import forms
+from django.contrib.gis.db import models as geomodels
 
 COMPANY_TYPES = (
     ("landlord", "Landlord"),
@@ -95,7 +96,8 @@ class Attorneys(models.Model):
     add_p = models.TextField(blank=True, null=True)
     match_type = models.TextField(blank=True, null=True)
     geocoder = models.TextField(blank=True, null=True)
-    geometry = models.TextField(blank=True, null=True)  # This field type is a guess.
+    # This field type is a guess.
+    geometry = geomodels.PointField(blank=True, null=True)
 
     class Meta:
         managed = True
@@ -202,7 +204,8 @@ class Filings(models.Model):
     add_p = models.TextField(blank=True, null=True)
     match_type = models.TextField(blank=True, null=True)
     geocoder = models.TextField(blank=True, null=True)
-    geometry = models.TextField(blank=True, null=True)  # This field type is a guess.
+    # This field type is a guess.
+    geometry = geomodels.PointField(blank=True, null=True)
 
     class Meta:
         managed = True
@@ -217,9 +220,8 @@ class Judgments(models.Model):
     date = models.DateField(blank=True, null=True)
     type = models.TextField(blank=True, null=True)
     method = models.TextField(blank=True, null=True)
-    for_field = models.TextField(
-        db_column="for", blank=True, null=True
-    )  # Field renamed because it was a Python reserved word.
+    # Field renamed because it was a Python reserved word.
+    for_field = models.TextField(db_column="for", blank=True, null=True)
     against = models.TextField(blank=True, null=True)
     docket = models.ForeignKey(
         DocketMeta,
@@ -234,3 +236,62 @@ class Judgments(models.Model):
         unique_together = (
             ("docket", "date", "type", "method", "for_field", "against"),
         )
+
+class Parcel(geomodels.Model):
+    object_id = models.IntegerField()
+    loc_id = models.CharField(max_length=100)
+    town_id = models.IntegerField()
+    geometry = geomodels.MultiPolygonField()
+
+
+class OwnerGroup(models.Model):
+    id = models.CharField(null=False, primary_key=True, max_length=200)
+
+    class Meta:
+        indexes = [
+            models.Index(fields=["id"]),
+        ]
+
+
+class Owner(models.Model):
+    prop_id = models.CharField(max_length=200)
+    loc_id = models.CharField(max_length=200)
+    fy = models.IntegerField()
+    use_code = models.CharField(max_length=100)
+    city = models.CharField(max_length=200)
+    owner1 = models.CharField(max_length=500)
+    own_addr = models.TextField()
+    own_city = models.CharField(max_length=200)
+    own_state = models.CharField(max_length=100)
+    own_zip = models.CharField(max_length=200)
+    co = models.CharField(max_length=200)
+    zip = models.CharField(max_length=200)
+    name_address = models.TextField()
+    group = models.ForeignKey(
+        OwnerGroup,
+        null=True,
+        on_delete=models.DO_NOTHING,
+        related_name="owners",
+    )
+    id_corp = models.CharField(max_length=200)
+    count = models.IntegerField()
+
+
+class Corp(models.Model):
+    id = models.CharField(
+        primary_key=True,
+        max_length=100,
+        null=False,
+    )
+    name = models.CharField(max_length=200, null=False)
+    group = models.ForeignKey(
+        OwnerGroup,
+        null=True,
+        on_delete=models.DO_NOTHING,
+        related_name="corps",
+    )
+
+    class Meta:
+        indexes = [
+            models.Index(fields=["id"]),
+        ]
