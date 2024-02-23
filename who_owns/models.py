@@ -1,11 +1,19 @@
+from django.contrib.gis.db import models as modelsGIS
 from django.db import models
 from django import forms
 
 COMPANY_TYPES = (
     ("landlord", "Landlord"),
-    ("law_firm", "Law Firm"),
-    ("property_management", "Property Management"),
+    ("lawfirm", "Law Firm"),
+    ("court", "Court"),
     ("unknown", "Unknown"),
+)
+
+LL_SUBTYPES = (
+    ("university", "University"),
+    ("noncorporate", "Non-corporate"),
+    ("corporate", "Corporate"),
+    ("housing_authority", "Housing Authority"),
 )
 
 
@@ -16,29 +24,45 @@ class Role(models.Model):
 class Person(models.Model):
     name = models.CharField(blank=False, null=True, max_length=500)
     roles = models.ManyToManyField(Role)
+    url = models.URLField(blank=True, null=True)
 
 
-class Address(models.Model):
+class Address(modelsGIS.Model):
     street = models.CharField(blank=True, null=True, max_length=200)
     state = models.CharField(blank=True, null=True, max_length=50)
     city = models.CharField(blank=True, null=True, max_length=50)
     zip = models.CharField(blank=True, null=True, max_length=20)
     add1 = models.CharField(blank=True, null=True, max_length=100)
     add2 = models.CharField(blank=True, null=True, max_length=100)
-    match_type = models.TextField(blank=True, null=True)
-    geocoder = models.TextField(blank=True, null=True)
-    geometry = models.TextField(blank=True, null=True)  # This field type is a guess.
+    match_type = models.CharField(blank=True, null=True, max_length=50)
+    geocoder = models.CharField(blank=True, null=True, max_length=20)
+    geometry = modelsGIS.PointField()
 
 
 class Parcel(models.Model):
-    pass
+    geometry = modelsGIS.PolygonField()
+    addresses = models.ManyToManyField(Address)
+
+
+class MetaCorp(models.Model):
+    """
+    'Owner' company. Likely arrived at manually. ID is cluster
+    """
+
+    id = models.CharField(primary_key=True, max_length=100)
+    name = models.CharField(blank=True, null=True, max_length=500)
 
 
 class Institution(models.Model):
     name = models.CharField(blank=True, null=True, max_length=500)
     type = forms.MultipleChoiceField(choices=COMPANY_TYPES)
+    ll_subtype = forms.MultipleChoiceField(choices=LL_SUBTYPES)
     people = models.ManyToManyField(Person)
     addresses = models.ManyToManyField(Address)
+    cluster = models.CharField(blank=True, null=True, max_length=100)
+    metacorp = models.ForeignKey(
+        MetaCorp, blank=True, null=True, on_delete=models.DO_NOTHING
+    )
 
 
 class DocketMeta(models.Model):
@@ -50,7 +74,7 @@ class DocketMeta(models.Model):
 
 class Docket(models.Model):
     date = models.DateField(blank=True, null=True)
-    text = models.TextField(blank=True, null=True)
+    text = models.CharField(blank=True, null=True, max_length=100)
     docket = models.ForeignKey(
         DocketMeta, null=True, on_delete=models.DO_NOTHING, related_name="docket_meta"
     )
@@ -75,19 +99,19 @@ class DocketOrphan(models.Model):
 class Attorney(models.Model):
     bar = models.CharField(unique=True, blank=True, primary_key=True, max_length=50)
     person = models.ForeignKey(Person, null=True, on_delete=models.DO_NOTHING)
-    name = models.TextField(blank=True, null=True)
-    address = models.TextField(blank=True, null=True)
-    phone = models.TextField(blank=True, null=True)
-    add1 = models.TextField(blank=True, null=True)
-    add2 = models.TextField(blank=True, null=True)
-    city = models.TextField(blank=True, null=True)
-    state = models.TextField(blank=True, null=True)
-    zip = models.TextField(blank=True, null=True)
-    office = models.TextField(blank=True, null=True)
-    add_p = models.TextField(blank=True, null=True)
-    match_type = models.TextField(blank=True, null=True)
-    geocoder = models.TextField(blank=True, null=True)
-    geometry = models.TextField(blank=True, null=True)  # This field type is a guess.
+    name = models.CharField(blank=True, null=True, max_length=500)
+    address = models.CharField(blank=True, null=True, max_length=200)
+    phone = models.CharField(blank=True, null=True, max_length=50)
+    add1 = models.CharField(blank=True, null=True, max_length=100)
+    add2 = models.CharField(blank=True, null=True, max_length=100)
+    city = models.CharField(blank=True, null=True, max_length=50)
+    state = models.CharField(blank=True, null=True, max_length=50)
+    zip = models.CharField(blank=True, null=True, max_length=20)
+    office = models.CharField(blank=True, null=True, max_length=150)
+    add_p = models.CharField(blank=True, null=True, max_length=500)
+    match_type = models.CharField(blank=True, null=True, max_length=50)
+    geocoder = models.CharField(blank=True, null=True, max_length=20)
+    geometry = modelsGIS.PointField(blank=True, null=True)
 
     class Meta:
         managed = True
@@ -98,7 +122,7 @@ class Attorney(models.Model):
 
 
 class Defendant(models.Model):
-    name = models.TextField(blank=True, null=True)
+    name = models.CharField(blank=True, null=True, max_length=500)
     docket = models.ForeignKey(
         DocketMeta,
         null=True,
@@ -119,7 +143,7 @@ class Defendant(models.Model):
 
 
 class Plaintiff(models.Model):
-    name = models.TextField(blank=True, null=True)
+    name = models.CharField(blank=True, null=True, max_length=500)
     person = models.ForeignKey(Person, null=True, on_delete=models.DO_NOTHING)
     docket = models.ForeignKey(
         DocketMeta,
@@ -142,11 +166,11 @@ class Plaintiff(models.Model):
 
 class Event(models.Model):
     date = models.DateField(blank=True, null=True)
-    session = models.TextField(blank=True, null=True)
-    locality = models.TextField(blank=True, null=True)
-    location = models.TextField(blank=True, null=True)
-    type = models.TextField(blank=True, null=True)
-    result = models.TextField(blank=True, null=True)
+    session = models.CharField(blank=True, null=True, max_length=70)
+    locality = models.CharField(blank=True, null=True, max_length=100)
+    location = models.CharField(blank=True, null=True, max_length=50)
+    type = models.CharField(blank=True, null=True, max_length=20)
+    result = models.CharField(blank=True, null=True, max_length=20)
     docket = models.ForeignKey(
         DocketMeta, null=True, on_delete=models.DO_NOTHING, related_name="event_docket"
     )
@@ -163,13 +187,13 @@ class Event(models.Model):
 
 
 class Filing(models.Model):
-    street = models.TextField(blank=True, null=True)
-    state = models.TextField(blank=True, null=True)
-    city = models.TextField(blank=True, null=True)
-    zip = models.TextField(blank=True, null=True)
-    case_type = models.TextField(blank=True, null=True)
+    street = models.CharField(blank=True, null=True, max_length=200)
+    state = models.CharField(blank=True, null=True, max_length=50)
+    city = models.CharField(blank=True, null=True, max_length=50)
+    zip = models.CharField(blank=True, null=True, max_length=20)
+    case_type = models.CharField(blank=True, null=True, max_length=50)
     file_date = models.DateField(blank=True, null=True)
-    case_status = models.TextField(blank=True, null=True)
+    case_status = models.CharField(blank=True, null=True, max_length=20)
     close_date = models.DateField(blank=True, null=True)
     ptf_attorney = models.ForeignKey(
         Attorney,
@@ -190,12 +214,12 @@ class Filing(models.Model):
     )
     district = models.TextField(blank=True, null=True)
     last_updated = models.DateTimeField(blank=True, null=True)
-    add1 = models.TextField(blank=True, null=True)
-    add2 = models.TextField(blank=True, null=True)
+    add1 = models.CharField(blank=True, null=True, max_length=100)
+    add2 = models.CharField(blank=True, null=True, max_length=100)
     add_p = models.TextField(blank=True, null=True)
-    match_type = models.TextField(blank=True, null=True)
-    geocoder = models.TextField(blank=True, null=True)
-    geometry = models.TextField(blank=True, null=True)  # This field type is a guess.
+    match_type = models.CharField(blank=True, null=True, max_length=50)
+    geocoder = models.CharField(blank=True, null=True, max_length=20)
+    geometry = modelsGIS.PointField(blank=True, null=True)
 
     class Meta:
         managed = True
@@ -208,12 +232,12 @@ class Filing(models.Model):
 
 class Judgment(models.Model):
     date = models.DateField(blank=True, null=True)
-    type = models.TextField(blank=True, null=True)
-    method = models.TextField(blank=True, null=True)
-    for_field = models.TextField(
-        db_column="for", blank=True, null=True
+    type = models.CharField(blank=True, null=True, max_length=50)
+    method = models.TextField(blank=True, null=True, max_length=50)
+    for_field = models.CharField(
+        db_column="for", blank=True, null=True, max_length=200
     )  # Field renamed because it was a Python reserved word.
-    against = models.TextField(blank=True, null=True)
+    against = models.CharField(blank=True, null=True, max_length=200)
     docket = models.ForeignKey(
         DocketMeta,
         null=True,
