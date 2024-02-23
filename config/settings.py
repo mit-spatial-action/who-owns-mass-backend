@@ -45,7 +45,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "django_extensions",
     # our apps
-    "mass_evictions",
+    "who_owns",
 ]
 
 MIDDLEWARE = [
