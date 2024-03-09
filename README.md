@@ -23,6 +23,11 @@ Install Python dependencies:
 pip install requirements.txt
 ```
 
+To run app:
+```shell
+./manage.py runserver
+```
+
 ## Create a local settings file
 ```shell
 cp config/settings/settings_local.example.py config/settings/settings_local.py

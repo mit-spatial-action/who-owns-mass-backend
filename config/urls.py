@@ -17,6 +17,10 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
+from who_owns import views
+
 urlpatterns = [
     path("admin/", admin.site.urls),
+    path("filings/", views.FilingList.as_view()),
+    path("filings/<int:pk>/", views.FilingDetail.as_view()),
 ]
