@@ -27,6 +27,20 @@ class Person(models.Model):
     url = models.URLField(blank=True, null=True)
 
 
+class Judge(models.Model):
+    name = models.CharField(max_length=500, unique=True)
+    person = models.ForeignKey(Person, null=True, on_delete=models.DO_NOTHING)
+
+    def save(self, *args, **kwargs):
+        # create person instance if judge has not been created yet
+        if not self.pk:
+            judge_role, _ = Role.objects.get_or_create(name="judge")
+            person_instance = Person.objects.create(name=self.name)
+            person_instance.roles.add(judge_role)
+            self.person = person_instance
+        super().save(*args, **kwargs)
+
+
 class Address(modelsGIS.Model):
     street = models.CharField(blank=True, null=True, max_length=200)
     state = models.CharField(blank=True, null=True, max_length=50)
@@ -117,6 +131,15 @@ class Attorney(models.Model):
         managed = True
         db_table = "attorneys"
 
+    def save(self, *args, **kwargs):
+        # create person & role instance if attorney has not been created yet
+        if not self.person:
+            attorney_role, _ = Role.objects.get_or_create(name="attorney")
+            person_instance = Person.objects.create(name=self.name)
+            person_instance.roles.add(attorney_role)
+            self.person = person_instance
+        super().save(*args, **kwargs)
+
     def __str__(self):
         return self.bar
 
@@ -144,7 +167,12 @@ class Defendant(models.Model):
 
 class Plaintiff(models.Model):
     name = models.CharField(blank=True, null=True, max_length=500)
-    person = models.ForeignKey(Person, null=True, on_delete=models.DO_NOTHING)
+    person = models.ForeignKey(
+        Person, null=True, blank=True, on_delete=models.DO_NOTHING
+    )
+    institution = models.ForeignKey(
+        Institution, null=True, blank=True, on_delete=models.DO_NOTHING
+    )
     docket = models.ForeignKey(
         DocketMeta,
         null=True,
@@ -244,6 +272,13 @@ class Judgment(models.Model):
         on_delete=models.DO_NOTHING,
         related_name="judgment_docket",
     )
+    damage = models.FloatField(null=True, blank=True)
+    filing_fees = models.FloatField(null=True, blank=True)
+    court_costs = models.FloatField(null=True, blank=True)
+    punitive = models.FloatField(null=True, blank=True)
+    atty_fee = models.FloatField(null=True, blank=True)
+    total = models.FloatField(null=True, blank=True)
+    presiding = models.ForeignKey(Judge, null=True, on_delete=models.DO_NOTHING)
 
     class Meta:
         managed = True

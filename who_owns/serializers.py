@@ -7,3 +7,8 @@ class FilingSerializer(serializers.Serializer):
     id = serializers.IntegerField(read_only=True)
     docket_id = serializers.CharField(read_only=True)
     geometry = geoserializers.GeometryField(read_only=True)
+
+
+class JudgeSerializer(serializers.Serializer):
+    id = serializers.IntegerField(read_only=True)
+    name = serializers.CharField(read_only=True)
