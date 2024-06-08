@@ -131,3 +131,14 @@ STATIC_URL = "static/"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 DEDUPLICATIONS_DIR = "/dedup-results-dir"
+
+
+TEST_RUNNER = "who_owns.test_runner.ManagedModelTestRunner"
+
+
+REST_FRAMEWORK = {
+    "DEFAULT_RENDERER_CLASSES": [
+        "rest_framework.renderers.JSONRenderer",
+        "rest_framework.renderers.BrowsableAPIRenderer",
+    ]
+}

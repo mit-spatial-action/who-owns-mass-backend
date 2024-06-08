@@ -24,4 +24,10 @@ urlpatterns = [
     # path("filings/", views.FilingList.as_view()),
     path("filings/<int:pk>/", views.FilingDetail.as_view()),
     path("judges/", views.JudgeList.as_view()),
+    path(
+        "company/<id>/portfolio",
+        views.InstitutionPortfolioDetail.as_view(),
+        name="get-company-portfolio",
+    ),
+    path("company/<pk>", views.InstitutionDetail.as_view(), name="get-company-details"),
 ]

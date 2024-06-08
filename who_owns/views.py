@@ -4,8 +4,86 @@ from rest_framework.views import APIView
 from rest_framework import generics
 from rest_framework.renderers import JSONRenderer
 
-from who_owns.models import Filing, Judge
-from who_owns.serializers import FilingSerializer, JudgeSerializer
+from who_owns.models import Filing, Judge, MetaCorp, Institution
+from who_owns.serializers import (
+    FilingSerializer,
+    JudgeSerializer,
+    MetaCorpPortfolioSerializer,
+    InstitutionDetailsSerializer,
+)
+
+
+class InstitutionPortfolioDetail(APIView):
+    def get(self, request, *args, **kwargs):
+        data = self.get_portfolio()
+        content = JSONRenderer().render(data)
+        return HttpResponse(content, content_type="application/json")
+
+    def get_portfolio(self):
+        """
+        Output: feature collection with parcel IDs,
+        addresses, coordinates, number of units and
+        evictions (y/n) for each property owned by the owner)
+        """
+        print("get_portfolio", self)
+        corp_with_portfolio = MetaCorpPortfolioSerializer(self.id)
+        content = JSONRenderer().render(serializer.data)
+        return HttpResponse(content, content_type="application/json")
+
+
+class InstitutionDetail(generics.RetrieveAPIView):
+    """
+    Owner details:
+    Input: Owner ID (unique)
+    Output: LLC name, Owner name, evictor type, total number of units,
+    total number of properties, code violations (if available),
+    lawyer names (if available) other names for the LLCs, # LLCs,
+    corporate addresses, total evictions by type,
+    """
+
+    serializer_class = InstitutionDetailsSerializer
+
+    def get_object(self):
+        return Institution.objects.get(pk=self.kwargs["pk"])
+
+    def get(self, request, pk, format=None):
+        instance = self.get_object()
+        serializer = InstitutionDetailsSerializer(instance)
+        content = JSONRenderer().render(serializer.data)
+        return HttpResponse(content, content_type="application/json")
+
+
+class MetaCorpDetail(APIView):
+    def get_object(self, id):
+        print("get_object", id)
+        try:
+            return MetaCorp.objects.get(id=id)
+        except MetaCorp.DoesNotExist:
+            raise Http404
+
+    def get(self, request, *args, **kwargs):
+        query = request.query_params.get("query")
+        if query == "portfolio":
+            print("getting portfolio")
+            data = self.get_portfolio()
+        elif query == "details":
+            print("getting details")
+            data = self.get_details()
+        else:
+            return Http404
+        content = JSONRenderer().render(data)
+        return HttpResponse(content, content_type="application/json")
+
+    def get_portfolio(self):
+        """
+        Output: feature collection with parcel IDs,
+        addresses, coordinates, number of units and
+        evictions (y/n) for each property owned by the owner)
+        """
+        print("get_portfolio", self)
+        corp_with_portfolio = MetaCorpPortfolioSerializer(self.id)
+        content = JSONRenderer().render(serializer.data)
+        return HttpResponse(content, content_type="application/json")
 
 
 class FilingList(generics.ListCreateAPIView):

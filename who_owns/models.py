@@ -2,23 +2,29 @@ from django.contrib.gis.db import models as modelsGIS
 from django.db import models
 from django import forms
 
-COMPANY_TYPES = (
-    ("landlord", "Landlord"),
-    ("lawfirm", "Law Firm"),
-    ("court", "Court"),
-    ("unknown", "Unknown"),
-)
 
-LL_SUBTYPES = (
-    ("university", "University"),
-    ("noncorporate", "Non-corporate"),
-    ("corporate", "Corporate"),
-    ("housing_authority", "Housing Authority"),
-)
+class CompanyType(models.Model):
+    """
+    Landlord, Court, Law office, etc
+    """
+
+    name = models.CharField(blank=False, null=True, unique=True, max_length=300)
+
+
+class LandlordType(models.Model):
+    """
+    Corporate, Non-profit, University, etc
+    """
+
+    name = models.CharField(blank=False, null=True, unique=True, max_length=300)
+
+
+class EvictorType(models.Model):
+    name = models.CharField(blank=False, null=True, unique=True, max_length=300)
 
 
 class Role(models.Model):
-    name = models.CharField(blank=False, null=True, max_length=500)
+    name = models.CharField(blank=False, null=True, unique=True, max_length=500)
 
 
 class Person(models.Model):
@@ -54,7 +60,8 @@ class Address(modelsGIS.Model):
 
 
 class Parcel(models.Model):
-    geometry = modelsGIS.PolygonField()
+    id = models.CharField(primary_key=True, db_index=True, max_length=100)
+    geometry = modelsGIS.PolygonField(blank=True, null=True)
     addresses = models.ManyToManyField(Address)
 
 
@@ -65,12 +72,20 @@ class MetaCorp(models.Model):
 
     id = models.CharField(primary_key=True, max_length=100)
     name = models.CharField(blank=True, null=True, max_length=500)
+    evictor_type = models.ForeignKey(
+        EvictorType, null=True, on_delete=models.DO_NOTHING
+    )
 
 
 class Institution(models.Model):
+    id = models.CharField(primary_key=True, max_length=100)
     name = models.CharField(blank=True, null=True, max_length=500)
-    type = forms.MultipleChoiceField(choices=COMPANY_TYPES)
-    ll_subtype = forms.MultipleChoiceField(choices=LL_SUBTYPES)
+    landlord_type = models.ForeignKey(
+        LandlordType, null=True, on_delete=models.DO_NOTHING
+    )
+    company_type = models.ForeignKey(
+        CompanyType, null=True, on_delete=models.DO_NOTHING
+    )
     people = models.ManyToManyField(Person)
     addresses = models.ManyToManyField(Address)
     cluster = models.CharField(blank=True, null=True, max_length=100)
@@ -215,6 +230,9 @@ class Event(models.Model):
 
 
 class Filing(models.Model):
+    address = models.ForeignKey(
+        Address, blank=True, null=True, on_delete=models.DO_NOTHING
+    )
     street = models.CharField(blank=True, null=True, max_length=200)
     state = models.CharField(blank=True, null=True, max_length=50)
     city = models.CharField(blank=True, null=True, max_length=50)
@@ -255,6 +273,18 @@ class Filing(models.Model):
 
     def save(self, *args, **kwargs):
         self.last_updated = self.last_updated.replace(tzinfo=None)
+        if not self.address:
+            self.address = Address.objects.create(
+                add1=self.add1,
+                add2=self.add2,
+                street=self.street,
+                state=self.state,
+                city=self.city,
+                zip=self.zip,
+                geometry=self.geometry,
+                geocoder=self.geocoder,
+                match_type=self.match_type,
+            )
         super(Filing, self).save(*args, **kwargs)
 
 
