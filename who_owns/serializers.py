@@ -52,14 +52,11 @@ class CompanyTypeSerializer(serializers.ModelSerializer):
 
 
 class AddressSerializer(serializers.ModelSerializer):
+    geometry = geoserializers.GeometryField(read_only=True)
+
     class Meta:
         model = Address
-        fields = [
-            "street",
-            "state",
-            "city",
-            "zip",
-        ]
+        fields = ["street", "state", "city", "zip", "geometry"]
 
 
 class InstitutionDetailsSerializer(serializers.ModelSerializer):
@@ -90,17 +87,22 @@ class ParcelSerializer(serializers.ModelSerializer):
 
 
 # class MetaCorpSerializer(serializers.Serializer):
-class MetaCorpPortfolioSerializer(serializers.ModelSerializer):
-    institution = InstitutionSerializer(many=True)
-    filings = FilingSerializer(many=True)
-    parcels = ParcelSerializer(many=True)
+class InstitutionPortfolioSerializer(serializers.ModelSerializer):
+    metacorp = MetaCorpSerializer()
 
     """
-            Output: feature collection with parcel IDs,
-            addresses, coordinates, number of units and
-            evictions (y/n) for each property owned by the owner)
-            """
+    Output: feature collection with parcel IDs,
+    addresses, coordinates, number of units and
+    evictions (y/n) for each property owned by the owner)
+    """
 
     class Meta:
-        model = MetaCorp
-        fields = "__all__"
+        model = Institution
+        fields = [
+            "id",
+            "name",
+            "landlord_type",
+            "company_type",
+            "addresses",
+            "metacorp",
+        ]

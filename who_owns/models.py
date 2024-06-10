@@ -47,6 +47,11 @@ class Judge(models.Model):
         super().save(*args, **kwargs)
 
 
+class Parcel(models.Model):
+    id = models.CharField(primary_key=True, db_index=True, max_length=100)
+    geometry = modelsGIS.PolygonField(blank=True, null=True)
+
+
 class Address(modelsGIS.Model):
     street = models.CharField(blank=True, null=True, max_length=200)
     state = models.CharField(blank=True, null=True, max_length=50)
@@ -57,12 +62,7 @@ class Address(modelsGIS.Model):
     match_type = models.CharField(blank=True, null=True, max_length=50)
     geocoder = models.CharField(blank=True, null=True, max_length=20)
     geometry = modelsGIS.PointField()
-
-
-class Parcel(models.Model):
-    id = models.CharField(primary_key=True, db_index=True, max_length=100)
-    geometry = modelsGIS.PolygonField(blank=True, null=True)
-    addresses = models.ManyToManyField(Address)
+    parcel = models.ForeignKey(Parcel, null=True, on_delete=models.DO_NOTHING)
 
 
 class MetaCorp(models.Model):

@@ -8,25 +8,28 @@ from who_owns.models import Filing, Judge, MetaCorp, Institution
 from who_owns.serializers import (
     FilingSerializer,
     JudgeSerializer,
-    MetaCorpPortfolioSerializer,
+    InstitutionPortfolioSerializer,
     InstitutionDetailsSerializer,
 )
 
 
-class InstitutionPortfolioDetail(APIView):
-    def get(self, request, *args, **kwargs):
-        data = self.get_portfolio()
-        content = JSONRenderer().render(data)
-        return HttpResponse(content, content_type="application/json")
+class InstitutionPortfolioDetail(generics.RetrieveAPIView):
+    """
+    Output: feature collection with parcel IDs,
+    addresses, coordinates, number of units and
+    evictions (y/n) for each property owned by the owner)
+    """
 
-    def get_portfolio(self):
-        """
-        Output: feature collection with parcel IDs,
-        addresses, coordinates, number of units and
-        evictions (y/n) for each property owned by the owner)
-        """
-        print("get_portfolio", self)
-        corp_with_portfolio = MetaCorpPortfolioSerializer(self.id)
+    def get_object(self):
+        return Institution.objects.get(pk=self.kwargs["pk"])
+
+    def get_related_objects(self, metacorp):
+        return Institution.objects.filter(metacorp=metacorp)
+
+    def get(self, request, *args, **kwargs):
+        instance = self.get_object()
+        related_instances = self.get_related_objects(instance.metacorp)
+        serializer = InstitutionPortfolioSerializer(related_instances, many=True)
         content = JSONRenderer().render(serializer.data)
         return HttpResponse(content, content_type="application/json")
 
@@ -55,7 +58,6 @@ class InstitutionDetail(generics.RetrieveAPIView):
 
 class MetaCorpDetail(APIView):
     def get_object(self, id):
-        print("get_object", id)
         try:
             return MetaCorp.objects.get(id=id)
         except MetaCorp.DoesNotExist:
