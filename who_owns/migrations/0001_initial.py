@@ -34,7 +34,6 @@ ADD COLUMN id SERIAL PRIMARY KEY;
 
 """
         ),
-        
         migrations.CreateModel(
             name="Attorney",
             fields=[
