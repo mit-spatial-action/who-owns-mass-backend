@@ -7,6 +7,7 @@ from who_owns.models import (
     LandlordType,
     CompanyType,
     Address,
+    Role,
 )
 
 
@@ -33,7 +34,24 @@ class MetaCorpSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
+class RoleSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Role
+        fields = ["name"]
+
+
+class AddressSerializer(serializers.ModelSerializer):
+    geometry = geoserializers.GeometryField(read_only=True)
+
+    class Meta:
+        model = Address
+        fields = ["street", "state", "city", "zip", "geometry"]
+
+
 class PersonSerializer(serializers.ModelSerializer):
+    roles = RoleSerializer(many=True)
+    address = AddressSerializer()
+
     class Meta:
         model = Person
         fields = "__all__"
@@ -49,14 +67,6 @@ class CompanyTypeSerializer(serializers.ModelSerializer):
     class Meta:
         model = CompanyType
         fields = ["name"]
-
-
-class AddressSerializer(serializers.ModelSerializer):
-    geometry = geoserializers.GeometryField(read_only=True)
-
-    class Meta:
-        model = Address
-        fields = ["street", "state", "city", "zip", "geometry"]
 
 
 class InstitutionDetailsSerializer(serializers.ModelSerializer):
@@ -75,7 +85,6 @@ class InstitutionDetailsSerializer(serializers.ModelSerializer):
     landlord_type = LandlordTypeSerializer()
     company_type = CompanyTypeSerializer()
     addresses = AddressSerializer()
-    print("InstitutionDetailsSerializer")
 
     class Meta:
         model = Institution
@@ -88,13 +97,13 @@ class ParcelSerializer(serializers.ModelSerializer):
 
 # class MetaCorpSerializer(serializers.Serializer):
 class InstitutionPortfolioSerializer(serializers.ModelSerializer):
-    metacorp = MetaCorpSerializer()
-
     """
     Output: feature collection with parcel IDs,
     addresses, coordinates, number of units and
     evictions (y/n) for each property owned by the owner)
     """
+
+    metacorp = MetaCorpSerializer()
 
     class Meta:
         model = Institution

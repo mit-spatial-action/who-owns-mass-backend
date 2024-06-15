@@ -1,3 +1,4 @@
+from tqdm import tqdm
 from who_owns.models import (
     Attorney,
     Address,
@@ -30,7 +31,7 @@ def create_landlord_institutions():
     ll_role, _ = Role.objects.get_or_create(name="landlord")
     owner_role, _ = Role.objects.get_or_create(name="owner")
     ll_company, _ = CompanyType.objects.get_or_create(name="landlord")
-    for lc in legacycorps:
+    for lc in tqdm(legacycorps):
         metacorp, _ = MetaCorp.objects.get_or_create(id=lc.group_network)
         inst, _ = Institution.objects.get_or_create(id=lc.id)
         inst.name = lc.entityname
@@ -39,7 +40,6 @@ def create_landlord_institutions():
         inst.save()
         # owners are connected to corps through edges
         edges = LegacyEdges.objects.filter(id_corp=inst.id)
-        print("found edges? #1", edges)
         for edge in edges:
             owners = LegacyOwners.objects.filter(group=edge.id_link)
             corps = LegacyCorps.objects.filter(id=edge.id_corp)
@@ -50,14 +50,12 @@ def create_landlord_institutions():
                     state=owner.own_state,
                     zip=owner.own_zip,
                 )
-                prsn, prsn_created = Person.objects.get_or_create(
+                prsn, _ = Person.objects.get_or_create(
                     name_address=owner.name_address, name=owner.owner1, address=address
                 )
                 prsn.roles.add(ll_role)
                 prsn.roles.add(owner_role)
                 prsn.save()
-                if prsn_created:
-                    print("new person created", prsn)
 
                 for corp in corps:
                     inst2, _ = Institution.objects.get_or_create(id=corp.id)
@@ -74,7 +72,7 @@ def create_landlord_institutions():
                 address, _ = Address.objects.get_or_create(
                     street=ind.address_simp, state=None, city=None, zip=None
                 )
-                prsn, prsn_created = Person.objects.get_or_create(
+                prsn, _ = Person.objects.get_or_create(
                     name=ind.fullname_simp,
                     name_address=owner.owner1,
                     legacy_inds_id=ind.id,
@@ -82,10 +80,8 @@ def create_landlord_institutions():
                 )
                 prsn.roles.add(ll_role)
                 prsn.save()
-                if prsn_created:
-                    print("new person created", prsn)
+
                 edges = LegacyEdges.objects.filter(id_link=inds.id)
-                print("found edges? #2", edges)
                 for edge in edges:
                     corps = LegacyCorps.objects.filter(id=edge.id_corp)
                     for corp in corps:
