@@ -99,6 +99,9 @@ class Institution(models.Model):
         MetaCorp, blank=True, null=True, on_delete=models.DO_NOTHING
     )
 
+    def __str__(self):
+        return str({self.id: self.name})
+
 
 class DocketMeta(models.Model):
     docket = models.TextField(primary_key=True, db_index=True)
