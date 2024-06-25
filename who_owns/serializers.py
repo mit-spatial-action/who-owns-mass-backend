@@ -49,8 +49,13 @@ class AddressSerializer(serializers.ModelSerializer):
 
 
 class PersonSerializer(serializers.ModelSerializer):
-    roles = RoleSerializer(many=True)
     address = AddressSerializer()
+    roles = serializers.SerializerMethodField()
+
+    def get_roles(self, obj):
+        # breakpoint()
+        print(obj)
+        return obj.roles.all().values_list("name", flat=True)
 
     class Meta:
         model = Person
@@ -79,12 +84,12 @@ class InstitutionDetailsSerializer(serializers.ModelSerializer):
     corporate addresses, total evictions by type,
     """
 
-    metacorp = MetaCorpSerializer()
-    people = PersonSerializer(many=True)
+    metacorp = MetaCorpSerializer(read_only=True)
+    people = PersonSerializer(many=True, read_only=True)
     name = serializers.CharField(read_only=True)
-    landlord_type = LandlordTypeSerializer()
-    company_type = CompanyTypeSerializer()
-    addresses = AddressSerializer()
+    landlord_type = LandlordTypeSerializer(read_only=True)
+    company_type = CompanyTypeSerializer(read_only=True)
+    addresses = AddressSerializer(read_only=True)
 
     class Meta:
         model = Institution
@@ -95,7 +100,6 @@ class ParcelSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField(read_only=True)
 
 
-# class MetaCorpSerializer(serializers.Serializer):
 class InstitutionPortfolioSerializer(serializers.ModelSerializer):
     """
     Output: feature collection with parcel IDs,
@@ -104,6 +108,8 @@ class InstitutionPortfolioSerializer(serializers.ModelSerializer):
     """
 
     metacorp = MetaCorpSerializer()
+    company_type = CompanyTypeSerializer(read_only=True)
+    landlord_type = LandlordTypeSerializer(read_only=True)
 
     class Meta:
         model = Institution
