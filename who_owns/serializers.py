@@ -29,9 +29,39 @@ class InstitutionSerializer(serializers.Serializer):
 
 
 class MetaCorpSerializer(serializers.ModelSerializer):
+    """
+    Sends back all institutions related to a single
+    requested metacorp as well as any other metacorp stats
+    """
+
+    institutions = serializers.SerializerMethodField()
+
+    def get_institutions(self, obj):
+        institutions = obj.institution_set.all()
+        return {
+            "institutions_count": institutions.count(),
+            "institutions": institutions.values("id", "name"),
+        }
+
     class Meta:
         model = MetaCorp
-        fields = "__all__"
+        fields = ["id", "name", "institutions"]
+
+
+class MetaCorpListSerializer(serializers.ModelSerializer):
+    """
+    Sends back all metacorps including institution count
+    """
+
+    institution_count = serializers.SerializerMethodField()
+
+    def get_institution_count(self, obj):
+        # if "count" in self.context["request"].query_params:
+        return obj.institution_set.count()
+
+    class Meta:
+        model = MetaCorp
+        fields = ["id", "name", "institution_count"]
 
 
 class RoleSerializer(serializers.ModelSerializer):
@@ -53,8 +83,6 @@ class PersonSerializer(serializers.ModelSerializer):
     roles = serializers.SerializerMethodField()
 
     def get_roles(self, obj):
-        # breakpoint()
-        print(obj)
         return obj.roles.all().values_list("name", flat=True)
 
     class Meta:
@@ -110,6 +138,7 @@ class InstitutionPortfolioSerializer(serializers.ModelSerializer):
     metacorp = MetaCorpSerializer()
     company_type = CompanyTypeSerializer(read_only=True)
     landlord_type = LandlordTypeSerializer(read_only=True)
+    people = PersonSerializer(many=True, read_only=True)
 
     class Meta:
         model = Institution
@@ -120,4 +149,5 @@ class InstitutionPortfolioSerializer(serializers.ModelSerializer):
             "company_type",
             "addresses",
             "metacorp",
+            "people",
         ]

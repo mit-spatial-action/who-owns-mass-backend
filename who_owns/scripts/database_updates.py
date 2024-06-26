@@ -1,16 +1,13 @@
 from tqdm import tqdm
 from who_owns.models import (
-    Attorney,
     Address,
     CompanyType,
     Institution,
-    LandlordType,
     LegacyCorps,
     LegacyInds,
     LegacyEdges,
     LegacyOwners,
     MetaCorp,
-    Parcel,
     Person,
     Role,
 )
@@ -31,6 +28,7 @@ def create_landlord_institutions():
     ll_role, _ = Role.objects.get_or_create(name="landlord")
     owner_role, _ = Role.objects.get_or_create(name="owner")
     ll_company, _ = CompanyType.objects.get_or_create(name="landlord")
+    print(legacycorps.count())
     for lc in tqdm(legacycorps):
         metacorp, _ = MetaCorp.objects.get_or_create(id=lc.group_network)
         inst, _ = Institution.objects.get_or_create(id=lc.id)
@@ -49,6 +47,9 @@ def create_landlord_institutions():
                     city=owner.own_city,
                     state=owner.own_state,
                     zip=owner.own_zip,
+                    prop_id=owner.prop_id,
+                    loc_id=owner.loc_id,
+                    use_code=owner.use_code,
                 )
                 prsn, _ = Person.objects.get_or_create(
                     name_address=owner.name_address, name=owner.owner1, address=address
@@ -70,7 +71,10 @@ def create_landlord_institutions():
             inds = LegacyInds.objects.filter(group_network=edge.id_link)
             for ind in inds:
                 address, _ = Address.objects.get_or_create(
-                    street=ind.address_simp, state=None, city=None, zip=None
+                    street=ind.address_simp,
+                    state=None,
+                    city=None,
+                    zip=None,
                 )
                 prsn, _ = Person.objects.get_or_create(
                     name=ind.fullname_simp,

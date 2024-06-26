@@ -46,7 +46,9 @@ class Address(modelsGIS.Model):
     match_type = models.CharField(blank=True, null=True, max_length=50)
     geocoder = models.CharField(blank=True, null=True, max_length=20)
     geometry = modelsGIS.PointField(blank=True, null=True)
-    parcel = models.ForeignKey(Parcel, null=True, on_delete=models.DO_NOTHING)
+    prop_id = models.CharField(blank=True, null=True, max_length=200)
+    loc_id = models.CharField(blank=True, null=True, max_length=200)
+    use_code = models.CharField(blank=True, null=True, max_length=50)
 
 
 class Person(models.Model):

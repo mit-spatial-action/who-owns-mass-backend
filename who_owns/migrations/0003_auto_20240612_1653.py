@@ -32,7 +32,15 @@ class Migration(migrations.Migration):
                 ("add2", models.CharField(blank=True, max_length=100, null=True)),
                 ("match_type", models.CharField(blank=True, max_length=50, null=True)),
                 ("geocoder", models.CharField(blank=True, max_length=20, null=True)),
-                ("geometry", django.contrib.gis.db.models.fields.PointField(srid=4326)),
+                (
+                    "geometry",
+                    django.contrib.gis.db.models.fields.PointField(
+                        srid=4326, blank=True, null=True
+                    ),
+                ),
+                ("loc_id", models.CharField(blank=True, null=True, max_length=200)),
+                ("prop_id", models.CharField(blank=True, null=True, max_length=200)),
+                ("use_code", models.CharField(blank=True, null=True, max_length=50)),
             ],
         ),
         migrations.CreateModel(

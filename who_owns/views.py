@@ -10,6 +10,8 @@ from who_owns.serializers import (
     JudgeSerializer,
     InstitutionPortfolioSerializer,
     InstitutionDetailsSerializer,
+    MetaCorpSerializer,
+    MetaCorpListSerializer,
 )
 
 
@@ -47,7 +49,7 @@ class InstitutionDetail(generics.RetrieveAPIView):
     serializer_class = InstitutionDetailsSerializer
 
     def get_object(self):
-        return Institution.objects.get(pk=self.kwargs["pk"])
+        return MetaCorp.objects.get(pk=self.kwargs["pk"])
 
     def get(self, request, pk, format=None):
         instance = self.get_object()
@@ -57,33 +59,27 @@ class InstitutionDetail(generics.RetrieveAPIView):
 
 
 class MetaCorpDetail(APIView):
-    def get_object(self, id):
+    def get_object(self):
         try:
-            return MetaCorp.objects.get(id=id)
+            return MetaCorp.objects.get(pk=self.kwargs["pk"])
         except MetaCorp.DoesNotExist:
             raise Http404
 
-    def get(self, request, *args, **kwargs):
-        query = request.query_params.get("query")
-        if query == "portfolio":
-            print("getting portfolio")
-            data = self.get_portfolio()
-        elif query == "details":
-            print("getting details")
-            data = self.get_details()
-        else:
-            return Http404
-        content = JSONRenderer().render(data)
+    def get(self, request, pk):
+        instance = self.get_object()
+        serializer = MetaCorpSerializer(instance)
+        content = JSONRenderer().render(serializer.data)
         return HttpResponse(content, content_type="application/json")
 
-    def get_portfolio(self):
-        """
-        Output: feature collection with parcel IDs,
-        addresses, coordinates, number of units and
-        evictions (y/n) for each property owned by the owner)
-        """
-        print("get_portfolio", self)
-        corp_with_portfolio = MetaCorpPortfolioSerializer(self.id)
+
+class MetaCorpList(generics.ListCreateAPIView):
+    queryset = MetaCorp.objects.all()
+
+    def list(self, request):
+        queryset = self.get_queryset()
+        serializer = MetaCorpListSerializer(
+            queryset, context={"request": request}, many=True
+        )
         content = JSONRenderer().render(serializer.data)
         return HttpResponse(content, content_type="application/json")
 
