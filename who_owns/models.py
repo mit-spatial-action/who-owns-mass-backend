@@ -1,5 +1,4 @@
-from django.contrib.gis.db import models as modelsGIS
-from django.db import models
+from django.contrib.gis.db import models
 from django import forms
 
 
@@ -7,8 +6,11 @@ class CompanyType(models.Model):
     """
     Landlord, Court, Law office, etc
     """
-
     name = models.CharField(blank=False, null=True, unique=True, max_length=300)
+    
+    class Meta:
+        db_table = "company_types"
+        managed = True
 
 
 class LandlordType(models.Model):
@@ -18,6 +20,109 @@ class LandlordType(models.Model):
 
     name = models.CharField(blank=False, null=True, unique=True, max_length=300)
 
+class Parcel(models.Model):
+    id = models.CharField(primary_key=True, db_index=True, max_length=100)
+    geometry = models.PolygonField(blank=True, null=True, srid=2249)
+    
+    class Meta:
+        db_table = "parcels"
+        managed = True    
+
+class Municipality(models.Model):
+    id = models.CharField(primary_key=True, unique=True, max_length=10)
+    muni = models.CharField(null=True, unique=True, max_length=250)
+    hns = models.BooleanField(null=True)
+    mapc = models.BooleanField(null=True)
+    geometry = models.MultiPolygonField(blank=True, null=True, srid=2249)
+    
+    class Meta:
+        managed = True
+        db_table = "munis"
+
+class ZipCode(models.Model):
+    zip = models.CharField(primary_key=True, unique=True, max_length=50)
+    state = models.CharField(max_length=10, null=True, blank=True)
+    unambig_state = models.CharField(max_length=10, null=True, blank=True)
+    muni_unambig_from = models.CharField(max_length=100, null=True, blank=True)
+    muni_unambig_to = models.CharField(max_length=100, null=True, blank=True)
+    geometry = models.MultiPolygonField(blank=True, null=True, srid=2249)
+
+    class Meta:
+        managed = True
+        db_table = "zips"
+
+
+
+class BlockGroup(models.Model):
+    id = models.BigIntegerField(primary_key=True)
+    geometry = models.MultiPolygonField(blank=True, null=True, srid=2249)
+    
+    class Meta:
+        managed = True
+        db_table = "block_groups"
+
+
+class Tract(models.Model):
+    id = models.BigIntegerField(primary_key=True)
+    geometry = models.MultiPolygonField(blank=True, null=True, srid=2249)
+
+    class Meta:
+        managed = True
+        db_table = "tracts"
+
+
+class ParcelPoint(models.Model):
+    """
+    Each row is a POINT() representation of a parcel in the MassGIS parcels database.
+    """
+    id = models.CharField(primary_key=True, db_index=True, max_length=100)
+    muni = models.ForeignKey(Municipality, null=True, blank=True, on_delete=models.DO_NOTHING)
+    block_group = models.ForeignKey(BlockGroup, null=True, blank=True, on_delete=models.DO_NOTHING)
+    tract = models.ForeignKey(Tract, null=True, blank=True, on_delete=models.DO_NOTHING)
+    geometry = models.PointField(blank=True, null=True, srid=2249)
+    
+    class Meta:
+        db_table = "parcels_point"
+        managed = True    
+
+
+class Address(models.Model):
+    addr = models.CharField(blank=True, null=True, max_length=500, help_text="Complete number, street name, type string, often reconstructed from address ranges, PO Boxes, etc.")    
+    start = models.IntegerField(blank=True, null=True, help_text="For ranges, start of address range. For single-number addresses, that single number.")
+    end = models.IntegerField(blank=True, null=True, help_text="For ranges, end of address range. For single-number addresses, that single number.")
+    body = models.CharField(blank=True, null=True, max_length=500, help_text="Street name and address type.")
+    even = models.BooleanField(default=False, help_text="Whether an address is even or odd.") 	
+    muni_str = models.CharField(null=True, blank=True, max_length=250)
+    muni = models.ForeignKey(Municipality, null=True, on_delete=models.DO_NOTHING) 	
+    postal = models.CharField(null=True, blank=True, max_length=50)	
+    state = models.CharField(blank=True, null=True, max_length=10) 
+    loc = models.ForeignKey(ParcelPoint, null=True, on_delete=models.DO_NOTHING) 	
+    class Meta:
+        db_table = "addresses"
+        managed = True
+
+
+class Site(models.Model):
+    id = models.IntegerField(primary_key=True)
+    fy = models.IntegerField()
+    muni = models.ForeignKey(Municipality, null=True, on_delete=models.DO_NOTHING)
+    ls_date = models.DateField(null=True)
+    ls_price = models.IntegerField(null=True)
+    bld_area = models.IntegerField(null=True)
+    res_area = models.IntegerField(null=True)
+    units = models.IntegerField(null=False)
+    bld_val = models.IntegerField()
+    lnd_val = models.IntegerField()
+    use_code = models.CharField(null=False, max_length=20)
+    luc = models.CharField(null=False, max_length=10)
+    ooc = models.BooleanField()
+    condo = models.BooleanField()
+    address = models.ForeignKey(Address, null=True, on_delete=models.DO_NOTHING)
+    
+    class Meta:
+        managed = True 
+        db_table = "sites"
+
 
 class EvictorType(models.Model):
     name = models.CharField(blank=False, null=True, unique=True, max_length=300)
@@ -25,38 +130,16 @@ class EvictorType(models.Model):
 
 class Role(models.Model):
     """
-    attorney, landlord, judge
+    attorney, landlord, judge, owner
     """
 
     name = models.CharField(blank=False, null=True, unique=True, max_length=500)
 
 
-class Parcel(models.Model):
-    id = models.CharField(primary_key=True, db_index=True, max_length=100)
-    geometry = modelsGIS.PolygonField(blank=True, null=True)
-
-
-class Address(modelsGIS.Model):
-    street = models.CharField(blank=True, null=True, max_length=200)
-    city = models.CharField(blank=True, null=True, max_length=50)
-    state = models.CharField(blank=True, null=True, max_length=50)
-    zip = models.CharField(blank=True, null=True, max_length=20)
-    add1 = models.CharField(blank=True, null=True, max_length=100)
-    add2 = models.CharField(blank=True, null=True, max_length=100)
-    match_type = models.CharField(blank=True, null=True, max_length=50)
-    geocoder = models.CharField(blank=True, null=True, max_length=20)
-    geometry = modelsGIS.PointField(blank=True, null=True)
-    prop_id = models.CharField(blank=True, null=True, max_length=200)
-    loc_id = models.CharField(blank=True, null=True, max_length=200)
-    use_code = models.CharField(blank=True, null=True, max_length=50)
-
-
 class Person(models.Model):
     name = models.CharField(blank=False, null=True, max_length=500)
-    name_address = models.CharField(blank=True, null=True, max_length=500)
     roles = models.ManyToManyField(Role)
     url = models.URLField(blank=True, null=True)
-    legacy_inds_id = models.CharField(null=True, blank=True, max_length=100)
     address = models.ForeignKey(Address, null=True, on_delete=models.DO_NOTHING)
 
 
@@ -76,17 +159,27 @@ class Judge(models.Model):
 
 class MetaCorp(models.Model):
     """
-    'Owner' company. Likely arrived at manually. ID is cluster
+    'Owner' company. Likely arrived at manually. ID is network cluster
     """
-
     id = models.CharField(primary_key=True, max_length=100, db_index=True)
     name = models.CharField(blank=True, null=True, max_length=500)
-    evictor_type = models.ForeignKey(
-        EvictorType, null=True, on_delete=models.DO_NOTHING
-    )
+    val = models.IntegerField(blank=True, null=True)
+    evictor_type = models.ForeignKey(EvictorType, null=True, on_delete=models.DO_NOTHING)
+    prop_count = models.IntegerField(null=True)
+    unit_count = models.FloatField(null=True)
+    area = models.IntegerField(null=True)
+    units_per_prop = models.FloatField(null=True)
+    val_per_prop = models.FloatField(null=True)
+    val_per_area = models.FloatField(null=True)
+    company_count = models.IntegerField(null=True)
+    class Meta:
+        db_table = "metacorps_network"
 
 
 class Institution(models.Model):
+    """
+    Any kind of institutions including LLCs, courts, etc.
+    """
     id = models.CharField(primary_key=True, max_length=100)
     name = models.CharField(blank=True, null=True, max_length=500)
     landlord_type = models.ForeignKey(
@@ -95,8 +188,9 @@ class Institution(models.Model):
     company_type = models.ForeignKey(
         CompanyType, null=True, on_delete=models.DO_NOTHING
     )
-    people = models.ManyToManyField(Person)
-    addresses = models.ManyToManyField(Address)
+    people = models.ManyToManyField(Person, related_name="people")
+    owner = models.ForeignKey(Person, null=True, on_delete=models.DO_NOTHING, related_name="owners")
+    address = models.ForeignKey(Address, null=True, on_delete=models.DO_NOTHING)
     metacorp = models.ForeignKey(
         MetaCorp, blank=True, null=True, on_delete=models.DO_NOTHING
     )
@@ -151,7 +245,7 @@ class Attorney(models.Model):
     add_p = models.CharField(blank=True, null=True, max_length=500)
     match_type = models.CharField(blank=True, null=True, max_length=50)
     geocoder = models.CharField(blank=True, null=True, max_length=20)
-    geometry = modelsGIS.PointField(blank=True, null=True)
+    geometry = models.PointField(blank=True, null=True)
 
     class Meta:
         managed = True
@@ -276,7 +370,7 @@ class Filing(models.Model):
     add_p = models.TextField(blank=True, null=True)
     match_type = models.CharField(blank=True, null=True, max_length=50)
     geocoder = models.CharField(blank=True, null=True, max_length=20)
-    geometry = modelsGIS.PointField(blank=True, null=True)
+    geometry = models.PointField(blank=True, null=True)
 
     class Meta:
         managed = True
@@ -328,62 +422,18 @@ class Judgment(models.Model):
             ("docket", "date", "type", "method", "for_field", "against"),
         )
 
-
-#### Legacy tables from R, initializing in Django's ORM to port over and create relationships here
-class LegacyOwners(models.Model):
-    prop_id = models.CharField(blank=True, null=True, max_length=100)
-    loc_id = models.TextField(
-        blank=True,
-        null=True,
-    )
-    fy = models.IntegerField(null=True)
-    use_code = models.CharField(max_length=20)
-    city = models.CharField(blank=True, null=True, max_length=50)
-    owner1 = models.CharField(blank=True, null=True, max_length=500)
-    own_addr = models.CharField(null=True, max_length=200)
-    own_city = models.CharField(blank=True, null=True, max_length=50)
-    own_state = models.CharField(blank=True, null=True, max_length=50)
-    own_zip = models.CharField(blank=True, null=True, max_length=20)
-    zip = models.CharField(blank=True, null=True, max_length=20)
-    name_address = models.CharField(blank=True, null=True, max_length=500)
-    group = models.CharField(blank=True, null=True, max_length=100)
-    id_corp = models.CharField(blank=True, null=True, max_length=50)
-    count = models.IntegerField(null=True)
+class Owners(models.Model):
+    id = models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')
+    name = models.CharField(blank=True, null=True, max_length=500)
+    inst = models.BooleanField(null=True)
+    trust = models.BooleanField(null=True)
+    trustees = models.BooleanField(null=True)
+    address = models.ForeignKey(Address, null=True, blank=True, on_delete=models.DO_NOTHING)
+    company = models.ForeignKey(Institution, null=True, blank=True, on_delete=models.DO_NOTHING)
+    cosine_group = models.CharField(null=True, blank=True, max_length=250)
+    metacorp = models.ForeignKey(MetaCorp, null=True, blank=True, on_delete=models.DO_NOTHING, help_text="network_group in original data")
+    site = models.ForeignKey(Site, null=True, blank=True, on_delete=models.DO_NOTHING)
 
     class Meta:
         managed = True
         db_table = "owners"
-
-
-class LegacyCorps(models.Model):
-    id = models.CharField(primary_key=True, max_length=50, db_index=True)
-    entityname = models.CharField(null=True, blank=True, max_length=250)
-    label = models.CharField(null=True, blank=True, max_length=50)
-    group_network = models.CharField(null=True, blank=True, max_length=50)
-
-    class Meta:
-        managed = True
-        db_table = "corps"
-
-
-class LegacyInds(models.Model):
-    id = models.CharField(primary_key=True, max_length=50)
-    fullname_simp = models.CharField(null=True, blank=True, max_length=200)
-    address_simp = models.CharField(null=True, blank=True, max_length=500)
-    name_address_simp = models.CharField(null=True, blank=True, max_length=1000)
-    label = models.CharField(null=True, blank=True, max_length=30)
-    group_network = models.CharField(null=True, blank=True, max_length=50)
-
-    class Meta:
-        managed = True
-        db_table = "inds"
-
-
-class LegacyEdges(models.Model):
-    id_link = models.CharField(null=True, max_length=100)
-    id_corp = models.CharField(null=True, max_length=100)
-    relation = models.CharField(null=True, max_length=50)
-
-    class Meta:
-        managed = True
-        db_table = "edges"

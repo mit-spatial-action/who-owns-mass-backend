@@ -47,9 +47,7 @@ class InstitutionDetail(generics.RetrieveAPIView):
     """
 
     serializer_class = InstitutionDetailsSerializer
-
-    def get_object(self):
-        return MetaCorp.objects.get(pk=self.kwargs["pk"])
+    queryset = Institution.objects.all()
 
     def get(self, request, pk, format=None):
         instance = self.get_object()

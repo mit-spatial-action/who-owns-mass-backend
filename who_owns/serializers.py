@@ -34,18 +34,18 @@ class MetaCorpSerializer(serializers.ModelSerializer):
     requested metacorp as well as any other metacorp stats
     """
 
-    institutions = serializers.SerializerMethodField()
+    related = serializers.SerializerMethodField()
 
-    def get_institutions(self, obj):
-        institutions = obj.institution_set.all()
+    def get_related(self, obj):
+        related = obj.institution_set.all()
         return {
-            "institutions_count": institutions.count(),
-            "institutions": institutions.values("id", "name"),
+            "institutions_count": related.count(),
+            "institutions": related.values("id", "name"),
         }
 
     class Meta:
         model = MetaCorp
-        fields = ["id", "name", "institutions"]
+        fields = ["id", "name", "related"]
 
 
 class MetaCorpListSerializer(serializers.ModelSerializer):
