@@ -26,11 +26,11 @@ urlpatterns = [
     path("judges/", views.JudgeList.as_view()),
     path(
         "companies/<pk>/portfolio/",
-        views.InstitutionPortfolioDetail.as_view(),
+        views.CompanyPortfolioDetail.as_view(),
         name="get-company-portfolio",
     ),
     path(
-        "companies/<pk>/", views.InstitutionDetail.as_view(), name="get-company-details"
+        "companies/<pk>/", views.CompanyDetail.as_view(), name="get-company-details"
     ),
     path("meta/<pk>/", views.MetaCorpDetail.as_view(), name="get-metacorp-detials"),
     path("meta/", views.MetaCorpList.as_view(), name="get-metacorp-detials"),

@@ -4,18 +4,18 @@ from rest_framework.views import APIView
 from rest_framework import generics
 from rest_framework.renderers import JSONRenderer
 
-from who_owns.models import Filing, Judge, MetaCorp, Institution
+from who_owns.models import Filing, Judge, MetaCorp, Company
 from who_owns.serializers import (
     FilingSerializer,
     JudgeSerializer,
-    InstitutionPortfolioSerializer,
-    InstitutionDetailsSerializer,
+    CompanyPortfolioSerializer,
+    CompanyDetailsSerializer,
     MetaCorpSerializer,
     MetaCorpListSerializer,
 )
 
 
-class InstitutionPortfolioDetail(generics.RetrieveAPIView):
+class CompanyPortfolioDetail(generics.RetrieveAPIView):
     """
     Output: feature collection with parcel IDs,
     addresses, coordinates, number of units and
@@ -23,20 +23,20 @@ class InstitutionPortfolioDetail(generics.RetrieveAPIView):
     """
 
     def get_object(self):
-        return Institution.objects.get(pk=self.kwargs["pk"])
+        return Company.objects.get(pk=self.kwargs["pk"])
 
     def get_related_objects(self, metacorp):
-        return Institution.objects.filter(metacorp=metacorp)
+        return Company.objects.filter(metacorp=metacorp)
 
     def get(self, request, *args, **kwargs):
         instance = self.get_object()
         related_instances = self.get_related_objects(instance.metacorp)
-        serializer = InstitutionPortfolioSerializer(related_instances, many=True)
+        serializer = CompanyPortfolioSerializer(related_instances, many=True)
         content = JSONRenderer().render(serializer.data)
         return HttpResponse(content, content_type="application/json")
 
 
-class InstitutionDetail(generics.RetrieveAPIView):
+class CompanyDetail(generics.RetrieveAPIView):
     """
     Owner details:
     Input: Owner ID (unique)
@@ -46,12 +46,12 @@ class InstitutionDetail(generics.RetrieveAPIView):
     corporate addresses, total evictions by type,
     """
 
-    serializer_class = InstitutionDetailsSerializer
-    queryset = Institution.objects.all()
+    serializer_class = CompanyDetailsSerializer
+    queryset = Company.objects.all()
 
     def get(self, request, pk, format=None):
         instance = self.get_object()
-        serializer = InstitutionDetailsSerializer(instance)
+        serializer = CompanyDetailsSerializer(instance)
         content = JSONRenderer().render(serializer.data)
         return HttpResponse(content, content_type="application/json")
 

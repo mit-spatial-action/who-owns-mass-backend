@@ -2,7 +2,7 @@ from rest_framework import serializers
 from rest_framework_gis import serializers as geoserializers
 from who_owns.models import (
     MetaCorp,
-    Institution,
+    Company,
     Person,
     LandlordType,
     CompanyType,
@@ -22,25 +22,25 @@ class JudgeSerializer(serializers.Serializer):
     name = serializers.CharField(read_only=True)
 
 
-class InstitutionSerializer(serializers.Serializer):
+class CompanySerializer(serializers.Serializer):
     class Meta:
-        model = Institution
+        model = Company
         fields = "__all__"
 
 
 class MetaCorpSerializer(serializers.ModelSerializer):
     """
-    Sends back all institutions related to a single
+    Sends back all companies related to a single
     requested metacorp as well as any other metacorp stats
     """
 
     related = serializers.SerializerMethodField()
 
     def get_related(self, obj):
-        related = obj.institution_set.all()
+        related = obj.company_set.all()
         return {
-            "institutions_count": related.count(),
-            "institutions": related.values("id", "name"),
+            "companies_count": related.count(),
+            "companies": related.values("id", "name"),
         }
 
     class Meta:
@@ -50,18 +50,18 @@ class MetaCorpSerializer(serializers.ModelSerializer):
 
 class MetaCorpListSerializer(serializers.ModelSerializer):
     """
-    Sends back all metacorps including institution count
+    Sends back all metacorps including company count
     """
 
-    institution_count = serializers.SerializerMethodField()
+    company_count = serializers.SerializerMethodField()
 
-    def get_institution_count(self, obj):
+    def get_company_count(self, obj):
         # if "count" in self.context["request"].query_params:
-        return obj.institution_set.count()
+        return obj.company_set.count()
 
     class Meta:
         model = MetaCorp
-        fields = ["id", "name", "institution_count"]
+        fields = ["id", "name", "company_count"]
 
 
 class RoleSerializer(serializers.ModelSerializer):
@@ -102,7 +102,7 @@ class CompanyTypeSerializer(serializers.ModelSerializer):
         fields = ["name"]
 
 
-class InstitutionDetailsSerializer(serializers.ModelSerializer):
+class CompanyDetailsSerializer(serializers.ModelSerializer):
     """
     Owner details:
     Input: Owner ID (unique)
@@ -120,7 +120,7 @@ class InstitutionDetailsSerializer(serializers.ModelSerializer):
     addresses = AddressSerializer(read_only=True)
 
     class Meta:
-        model = Institution
+        model = Company
         fields = "__all__"
 
 
@@ -128,7 +128,7 @@ class ParcelSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField(read_only=True)
 
 
-class InstitutionPortfolioSerializer(serializers.ModelSerializer):
+class CompanyPortfolioSerializer(serializers.ModelSerializer):
     """
     Output: feature collection with parcel IDs,
     addresses, coordinates, number of units and
@@ -141,7 +141,7 @@ class InstitutionPortfolioSerializer(serializers.ModelSerializer):
     people = PersonSerializer(many=True, read_only=True)
 
     class Meta:
-        model = Institution
+        model = Company
         fields = [
             "id",
             "name",

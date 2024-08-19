@@ -7,7 +7,7 @@ class CompanyType(models.Model):
     Landlord, Court, Law office, etc
     """
     name = models.CharField(blank=False, null=True, unique=True, max_length=300)
-    
+
     class Meta:
         db_table = "company_types"
         managed = True
@@ -172,13 +172,15 @@ class MetaCorp(models.Model):
     val_per_prop = models.FloatField(null=True)
     val_per_area = models.FloatField(null=True)
     company_count = models.IntegerField(null=True)
+    
     class Meta:
         db_table = "metacorps_network"
 
 
-class Institution(models.Model):
+class Company(models.Model):
     """
-    Any kind of institutions including LLCs, courts, etc.
+    Any kind of companies including LLCs, Trusts, etc. 
+    TODO: figure out what to do about courts
     """
     id = models.CharField(primary_key=True, max_length=100)
     name = models.CharField(blank=True, null=True, max_length=500)
@@ -198,6 +200,9 @@ class Institution(models.Model):
     def __str__(self):
         return str({self.id: self.name})
 
+    class Meta:
+        db_table = "companies"
+        managed = True
 
 class DocketMeta(models.Model):
     docket = models.TextField(primary_key=True, db_index=True)
@@ -290,8 +295,8 @@ class Plaintiff(models.Model):
     person = models.ForeignKey(
         Person, null=True, blank=True, on_delete=models.DO_NOTHING
     )
-    institution = models.ForeignKey(
-        Institution, null=True, blank=True, on_delete=models.DO_NOTHING
+    company = models.ForeignKey(
+        Company, null=True, blank=True, on_delete=models.DO_NOTHING
     )
     docket = models.ForeignKey(
         DocketMeta,
@@ -422,14 +427,13 @@ class Judgment(models.Model):
             ("docket", "date", "type", "method", "for_field", "against"),
         )
 
-class Owners(models.Model):
+class Owner(models.Model):
     id = models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')
     name = models.CharField(blank=True, null=True, max_length=500)
     inst = models.BooleanField(null=True)
     trust = models.BooleanField(null=True)
     trustees = models.BooleanField(null=True)
     address = models.ForeignKey(Address, null=True, blank=True, on_delete=models.DO_NOTHING)
-    company = models.ForeignKey(Institution, null=True, blank=True, on_delete=models.DO_NOTHING)
     cosine_group = models.CharField(null=True, blank=True, max_length=250)
     metacorp = models.ForeignKey(MetaCorp, null=True, blank=True, on_delete=models.DO_NOTHING, help_text="network_group in original data")
     site = models.ForeignKey(Site, null=True, blank=True, on_delete=models.DO_NOTHING)
