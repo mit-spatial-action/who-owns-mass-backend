@@ -9,7 +9,7 @@ class CompanyType(models.Model):
     name = models.CharField(blank=False, null=True, unique=True, max_length=300)
 
     class Meta:
-        db_table = "company_types"
+        db_table = "company_type"
         managed = True
 
 
@@ -37,7 +37,7 @@ class Municipality(models.Model):
     
     class Meta:
         managed = True
-        db_table = "munis"
+        db_table = "muni"
 
 class ZipCode(models.Model):
     zip = models.CharField(primary_key=True, unique=True, max_length=50)
@@ -49,7 +49,7 @@ class ZipCode(models.Model):
 
     class Meta:
         managed = True
-        db_table = "zips"
+        db_table = "zip"
 
 
 
@@ -59,7 +59,7 @@ class BlockGroup(models.Model):
     
     class Meta:
         managed = True
-        db_table = "block_groups"
+        db_table = "block_group"
 
 
 class Tract(models.Model):
@@ -68,7 +68,7 @@ class Tract(models.Model):
 
     class Meta:
         managed = True
-        db_table = "tracts"
+        db_table = "tract"
 
 
 class ParcelPoint(models.Model):
@@ -98,7 +98,7 @@ class Address(models.Model):
     state = models.CharField(blank=True, null=True, max_length=10) 
     loc = models.ForeignKey(ParcelPoint, null=True, on_delete=models.DO_NOTHING) 	
     class Meta:
-        db_table = "addresses"
+        db_table = "address"
         managed = True
 
 
@@ -121,7 +121,7 @@ class Site(models.Model):
     
     class Meta:
         managed = True 
-        db_table = "sites"
+        db_table = "site"
 
 
 class EvictorType(models.Model):
@@ -132,16 +132,20 @@ class Role(models.Model):
     """
     attorney, landlord, judge, owner
     """
-
     name = models.CharField(blank=False, null=True, unique=True, max_length=500)
-
+    class Meta:
+        managed = True
+        db_table = "role"
 
 class Person(models.Model):
     name = models.CharField(blank=False, null=True, max_length=500)
     roles = models.ManyToManyField(Role)
     url = models.URLField(blank=True, null=True)
-    address = models.ForeignKey(Address, null=True, on_delete=models.DO_NOTHING)
-
+    inst = models.BooleanField(null=True)
+    class Meta:
+        managed = True
+        db_table = "person"
+        
 
 class Judge(models.Model):
     name = models.CharField(max_length=500, unique=True)
@@ -175,34 +179,6 @@ class MetaCorp(models.Model):
     
     class Meta:
         db_table = "metacorps_network"
-
-
-class Company(models.Model):
-    """
-    Any kind of companies including LLCs, Trusts, etc. 
-    TODO: figure out what to do about courts
-    """
-    id = models.CharField(primary_key=True, max_length=100)
-    name = models.CharField(blank=True, null=True, max_length=500)
-    landlord_type = models.ForeignKey(
-        LandlordType, null=True, on_delete=models.DO_NOTHING
-    )
-    company_type = models.ForeignKey(
-        CompanyType, null=True, on_delete=models.DO_NOTHING
-    )
-    people = models.ManyToManyField(Person, related_name="people")
-    owner = models.ForeignKey(Person, null=True, on_delete=models.DO_NOTHING, related_name="owners")
-    address = models.ForeignKey(Address, null=True, on_delete=models.DO_NOTHING)
-    metacorp = models.ForeignKey(
-        MetaCorp, blank=True, null=True, on_delete=models.DO_NOTHING
-    )
-
-    def __str__(self):
-        return str({self.id: self.name})
-
-    class Meta:
-        db_table = "companies"
-        managed = True
 
 class DocketMeta(models.Model):
     docket = models.TextField(primary_key=True, db_index=True)
@@ -281,33 +257,6 @@ class Defendant(models.Model):
     class Meta:
         managed = True
         db_table = "defendants"
-        unique_together = (("docket", "name"),)
-
-    def __str__(self):
-        if self.name:
-            return str(self.id) + ": [" + self.name + "]"
-        else:
-            return str(self.id)
-
-
-class Plaintiff(models.Model):
-    name = models.CharField(blank=True, null=True, max_length=500)
-    person = models.ForeignKey(
-        Person, null=True, blank=True, on_delete=models.DO_NOTHING
-    )
-    company = models.ForeignKey(
-        Company, null=True, blank=True, on_delete=models.DO_NOTHING
-    )
-    docket = models.ForeignKey(
-        DocketMeta,
-        null=True,
-        on_delete=models.DO_NOTHING,
-        related_name="plaintiff_docket",
-    )
-
-    class Meta:
-        managed = True
-        db_table = "plaintiffs"
         unique_together = (("docket", "name"),)
 
     def __str__(self):
@@ -440,4 +389,54 @@ class Owner(models.Model):
 
     class Meta:
         managed = True
-        db_table = "owners"
+        db_table = "owner"
+
+
+class Company(models.Model):
+    """
+    Any kind of companies including LLCs, Trusts, etc. 
+    TODO: figure out what to do about courts
+    """
+    id = models.CharField(primary_key=True, max_length=100)
+    name = models.CharField(blank=True, null=True, max_length=500)
+    landlord_type = models.ForeignKey(LandlordType, null=True, on_delete=models.DO_NOTHING)
+    company_type = models.ForeignKey(CompanyType, null=True, on_delete=models.DO_NOTHING)
+    person = models.ManyToManyField(Person, related_name="people")
+    owner = models.ManyToManyField(Owner, related_name="owners")
+    address = models.ForeignKey(Address, null=True, on_delete=models.DO_NOTHING)
+    metacorp = models.ForeignKey(
+        MetaCorp, blank=True, null=True, on_delete=models.DO_NOTHING
+    )
+
+    def __str__(self):
+        return str({self.id: self.name})
+
+    class Meta:
+        db_table = "company"
+        managed = True
+
+class Plaintiff(models.Model):
+    name = models.CharField(blank=True, null=True, max_length=500)
+    person = models.ForeignKey(
+        Person, null=True, blank=True, on_delete=models.DO_NOTHING
+    )
+    company = models.ForeignKey(
+        Company, null=True, blank=True, on_delete=models.DO_NOTHING
+    )
+    docket = models.ForeignKey(
+        DocketMeta,
+        null=True,
+        on_delete=models.DO_NOTHING,
+        related_name="plaintiff_docket",
+    )
+
+    class Meta:
+        managed = True
+        db_table = "plaintiffs"
+        unique_together = (("docket", "name"),)
+
+    def __str__(self):
+        if self.name:
+            return str(self.id) + ": [" + self.name + "]"
+        else:
+            return str(self.id)

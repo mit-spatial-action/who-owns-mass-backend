@@ -4,6 +4,7 @@ from who_owns.models import (
     MetaCorp,
     Company,
     Person,
+    Owner,
     LandlordType,
     CompanyType,
     Address,
@@ -75,7 +76,7 @@ class AddressSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Address
-        fields = ["street", "state", "city", "zip", "geometry"]
+        fields = ["id", "addr", "muni_str", "postal", "state", "geometry"]
 
 
 class PersonSerializer(serializers.ModelSerializer):
@@ -101,6 +102,10 @@ class CompanyTypeSerializer(serializers.ModelSerializer):
         model = CompanyType
         fields = ["name"]
 
+class OwnerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Owner
+        fields = "__all__"
 
 class CompanyDetailsSerializer(serializers.ModelSerializer):
     """
@@ -111,13 +116,13 @@ class CompanyDetailsSerializer(serializers.ModelSerializer):
     lawyer names (if available) other names for the LLCs, # LLCs,
     corporate addresses, total evictions by type,
     """
-
     metacorp = MetaCorpSerializer(read_only=True)
     people = PersonSerializer(many=True, read_only=True)
+    owners = OwnerSerializer(many=True, read_only=True)
     name = serializers.CharField(read_only=True)
     landlord_type = LandlordTypeSerializer(read_only=True)
     company_type = CompanyTypeSerializer(read_only=True)
-    addresses = AddressSerializer(read_only=True)
+    address = AddressSerializer(read_only=True)
 
     class Meta:
         model = Company
@@ -147,7 +152,7 @@ class CompanyPortfolioSerializer(serializers.ModelSerializer):
             "name",
             "landlord_type",
             "company_type",
-            "addresses",
+            "address",
             "metacorp",
             "people",
         ]

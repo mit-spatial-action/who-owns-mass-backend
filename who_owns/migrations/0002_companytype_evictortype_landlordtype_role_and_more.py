@@ -82,39 +82,13 @@ class Migration(migrations.Migration):
                 ('roles', models.ManyToManyField(to='who_owns.role')),
             ],
         ),
-        migrations.CreateModel(
-            name='MetaCorp',
-            fields=[
-                ('id', models.CharField(db_index=True, max_length=100, primary_key=True, serialize=False)),
-                ('name', models.CharField(blank=True, max_length=500, null=True)),
-                ('prop_count', models.IntegerField(null=True)),
-                ('unit_count', models.FloatField(null=True)),
-                ('area', models.IntegerField(null=True)),
-                ('units_per_prop', models.FloatField(null=True)),
-                ('val_per_prop', models.FloatField(null=True)),
-                ('val_per_area', models.FloatField(null=True)),
-                ('company_count', models.IntegerField(null=True)),
-                ('evictor_type', models.ForeignKey(null=True, on_delete=django.db.models.deletion.DO_NOTHING, to='who_owns.evictortype')),
-            ],
-        ),
+        
         migrations.CreateModel(
             name='Judge',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('name', models.CharField(max_length=500, unique=True)),
                 ('person', models.ForeignKey(null=True, on_delete=django.db.models.deletion.DO_NOTHING, to='who_owns.person')),
-            ],
-        ),
-        migrations.CreateModel(
-            name='Institution',
-            fields=[
-                ('id', models.CharField(max_length=100, primary_key=True, serialize=False)),
-                ('name', models.CharField(blank=True, max_length=500, null=True)),
-                ('company_type', models.ForeignKey(null=True, on_delete=django.db.models.deletion.DO_NOTHING, to='who_owns.companytype')),
-                ('landlord_type', models.ForeignKey(null=True, on_delete=django.db.models.deletion.DO_NOTHING, to='who_owns.landlordtype')),
-                ('metacorp', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.DO_NOTHING, to='who_owns.metacorp')),
-                ('owner', models.ForeignKey(null=True, on_delete=django.db.models.deletion.DO_NOTHING, related_name='owners', to='who_owns.person')),
-                ('people', models.ManyToManyField(related_name='people', to='who_owns.person')),
             ],
         ),
         migrations.AddField(
@@ -127,14 +101,5 @@ class Migration(migrations.Migration):
             name='presiding',
             field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.DO_NOTHING, to='who_owns.judge'),
         ),
-        migrations.AddField(
-            model_name='plaintiff',
-            name='institution',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.DO_NOTHING, to='who_owns.institution'),
-        ),
-        migrations.AddField(
-            model_name='plaintiff',
-            name='person',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.DO_NOTHING, to='who_owns.person'),
-        ),
+        
     ]
