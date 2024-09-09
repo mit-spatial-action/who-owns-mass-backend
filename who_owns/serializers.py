@@ -23,12 +23,6 @@ class JudgeSerializer(serializers.Serializer):
     name = serializers.CharField(read_only=True)
 
 
-class CompanySerializer(serializers.Serializer):
-    class Meta:
-        model = Company
-        fields = "__all__"
-
-
 class MetaCorpSerializer(serializers.ModelSerializer):
     """
     Sends back all companies related to a single
@@ -107,6 +101,13 @@ class OwnerSerializer(serializers.ModelSerializer):
         model = Owner
         fields = "__all__"
 
+class CompanySerializer(serializers.Serializer):
+    owner = OwnerSerializer
+    class Meta:
+        model = Company
+        fields = "__all__"
+
+
 class CompanyDetailsSerializer(serializers.ModelSerializer):
     """
     Owner details:
@@ -118,7 +119,7 @@ class CompanyDetailsSerializer(serializers.ModelSerializer):
     """
     metacorp = MetaCorpSerializer(read_only=True)
     people = PersonSerializer(many=True, read_only=True)
-    owners = OwnerSerializer(many=True, read_only=True)
+    owner = OwnerSerializer(many=True, read_only=True)
     name = serializers.CharField(read_only=True)
     landlord_type = LandlordTypeSerializer(read_only=True)
     company_type = CompanyTypeSerializer(read_only=True)
@@ -126,7 +127,7 @@ class CompanyDetailsSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Company
-        fields = "__all__"
+        fields = ["metacorp", "people", "owner", "name", "landlord_type", "company_type", "address"]
 
 
 class ParcelSerializer(serializers.ModelSerializer):
