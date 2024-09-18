@@ -5,3 +5,4 @@ venv/
 .env
 settings_local.py
 settings.json
+.DS_Store

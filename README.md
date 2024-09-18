@@ -20,7 +20,7 @@ echo "mass-evictions" >> .python-version
 
 Install Python dependencies:
 ```shell
-pip install requirements.txt
+pip install requirements.txt -r
 ```
 
 To run app:
@@ -48,7 +48,7 @@ select * from plaintiffs limit 5;
 Migrate DB
 
 ```shell
-./manage.py migrate     
+./manage.py migrate 
 ```
 
 to run Django shell (and make it nice)
