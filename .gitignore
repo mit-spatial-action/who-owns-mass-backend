@@ -6,3 +6,4 @@ venv/
 settings_local.py
 settings.json
 .DS_Store
+db_backup
