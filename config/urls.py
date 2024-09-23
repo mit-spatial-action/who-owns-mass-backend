@@ -24,6 +24,7 @@ urlpatterns = [
     # path("filings/", views.FilingList.as_view()),
     path("filings/<int:pk>/", views.FilingDetail.as_view()),
     path("judges/", views.JudgeList.as_view()),
+    path("companies/", views.get_company_by_name, name="get-company-by-name"), 
     path(
         "companies/<pk>/portfolio/",
         views.CompanyPortfolioDetail.as_view(),

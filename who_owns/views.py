@@ -1,3 +1,4 @@
+from django.db.models import Q
 from django.http import HttpResponse, Http404
 
 from rest_framework.views import APIView
@@ -116,3 +117,20 @@ class JudgeList(generics.ListCreateAPIView):
         serializer = JudgeSerializer(queryset, many=True)
         content = JSONRenderer().render(serializer.data)
         return HttpResponse(content, content_type="application/json")
+
+
+def get_company_by_name(request, *args, **kwargs):
+    """
+    Getting company matches by name, passed through search query /company/?name=NAME
+    Assuming substring. Returning JSON of all matches.
+    """
+    name_input = request.GET.get("name")
+    if not name_input:
+        return 
+    
+    name_input = str.upper(name_input)
+    matches_found = Company.objects.filter(Q(name__contains=name_input))
+    serializer = CompanyDetailsSerializer(matches_found, many=True)
+    content = JSONRenderer().render(serializer.data)
+    return HttpResponse(content, content_type="application/json")
+
