@@ -24,7 +24,6 @@ psycopg2==2.9.5
 ptyprocess==0.7.0
 pure-eval==0.2.2
 Pygments==2.14.0
-pygraphviz==1.12
 pytest==8.2.2
 python-dotenv==1.0.1
 pytz==2024.1
