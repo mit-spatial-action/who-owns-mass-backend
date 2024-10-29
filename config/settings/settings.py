@@ -91,6 +91,9 @@ DATABASES = {
         "PASSWORD": env("DB_PW"),
         "HOST": env("DB_HOST"),
         "PORT": env("DB_PORT"),
+        "OPTIONS": {
+            "sslmode": env("DB_SSL")
+        },
     }
 }
 
@@ -149,5 +152,5 @@ REST_FRAMEWORK = {
     ]
 }
 
-GDAL_LIBRARY_PATH = env("GDAL_LIBRARY_PATH")
-GEOS_LIBRARY_PATH = env("GEOS_LIBRARY_PATH")
+# GDAL_LIBRARY_PATH = env("GDAL_LIBRARY_PATH")
+# GEOS_LIBRARY_PATH = env("GEOS_LIBRARY_PATH")
