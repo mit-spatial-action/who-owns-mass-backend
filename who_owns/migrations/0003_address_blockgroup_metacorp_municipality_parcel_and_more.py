@@ -169,10 +169,12 @@ class Migration(migrations.Migration):
             name='ParcelPoint',
             fields=[
                 ('id', models.CharField(db_index=True, max_length=100, primary_key=True, serialize=False)),
-                ('geometry', django.contrib.gis.db.models.fields.PointField(blank=True, null=True, srid=2249)),
+                ('geometry', django.contrib.gis.db.models.fields.PointField(blank=True, null=True, srid=4326)),
                 ('block_group', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.DO_NOTHING, to='who_owns.blockgroup')),
                 ('muni', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.DO_NOTHING, to='who_owns.municipality')),
                 ('tract', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.DO_NOTHING, to='who_owns.tract')),
+                ('latitude', models.FloatField(null=True)),
+                ('longitude', models.FloatField(null=True)),
             ],
             options={
                 'db_table': 'parcels_point',
@@ -235,3 +237,5 @@ class Migration(migrations.Migration):
             field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.DO_NOTHING, to='who_owns.company'),
         ),
     ]
+
+

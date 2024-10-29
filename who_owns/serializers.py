@@ -1,3 +1,4 @@
+from django.db.models import F
 from rest_framework import serializers
 from rest_framework_gis import serializers as geoserializers
 from who_owns.models import (
@@ -9,6 +10,7 @@ from who_owns.models import (
     CompanyType,
     Address,
     Role,
+    ParcelPoint,
 )
 
 
@@ -33,9 +35,13 @@ class MetaCorpSerializer(serializers.ModelSerializer):
 
     def get_related(self, obj):
         related = obj.company_set.all()
+        related = related.annotate(
+            longitude=F('address__loc__longitude'),
+            latitude=F('address__loc__latitude')
+        )
         return {
             "companies_count": related.count(),
-            "companies": related.values("id", "name"),
+            "companies": related.values("id", "name", "longitude", "latitude"),
         }
 
     class Meta:
@@ -64,13 +70,25 @@ class RoleSerializer(serializers.ModelSerializer):
         model = Role
         fields = ["name"]
 
+class ParcelPointSerializer(serializers.ModelSerializer):
+    class Meta:
+        mordel = ParcelPoint
+        fields = ["longitude", "latitude"]
 
 class AddressSerializer(serializers.ModelSerializer):
     geometry = geoserializers.GeometryField(read_only=True)
+    latitude = serializers.SerializerMethodField()
+    longitude = serializers.SerializerMethodField()
+
+    def get_latitude(self, obj):
+        return obj.loc.latitude
+
+    def get_longitude(self, obj):
+        return obj.loc.longitude
 
     class Meta:
         model = Address
-        fields = ["id", "addr", "muni_str", "postal", "state", "geometry"]
+        fields = ["id", "addr", "muni_str", "postal", "state", "geometry", "latitude", "longitude"]
 
 
 class PersonSerializer(serializers.ModelSerializer):
@@ -124,7 +142,6 @@ class CompanyDetailsSerializer(serializers.ModelSerializer):
     landlord_type = LandlordTypeSerializer(read_only=True)
     company_type = CompanyTypeSerializer(read_only=True)
     address = AddressSerializer(read_only=True)
-
     class Meta:
         model = Company
         fields = ["metacorp", "people", "owner", "name", "landlord_type", "company_type", "address"]

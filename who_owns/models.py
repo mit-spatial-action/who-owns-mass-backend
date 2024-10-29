@@ -80,7 +80,9 @@ class ParcelPoint(models.Model):
     block_group = models.ForeignKey(BlockGroup, null=True, blank=True, on_delete=models.DO_NOTHING)
     tract = models.ForeignKey(Tract, null=True, blank=True, on_delete=models.DO_NOTHING)
     geometry = models.PointField(blank=True, null=True, srid=2249)
-    
+    latitude = models.FloatField(null=True)
+    longitude = models.FloatField(null=True)
+
     class Meta:
         db_table = "parcels_point"
         managed = True    
@@ -97,6 +99,7 @@ class Address(models.Model):
     postal = models.CharField(null=True, blank=True, max_length=50)	
     state = models.CharField(blank=True, null=True, max_length=10) 
     loc = models.ForeignKey(ParcelPoint, null=True, on_delete=models.DO_NOTHING) 	
+
     class Meta:
         db_table = "address"
         managed = True

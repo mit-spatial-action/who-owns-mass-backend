@@ -18,7 +18,7 @@ class Migration(migrations.Migration):
                 ('name', models.CharField(max_length=300, null=True, unique=True)),
             ],
             options={
-                'db_table': 'company_types',
+                'db_table': 'company_type',
                 'managed': True,
             },
         ),
