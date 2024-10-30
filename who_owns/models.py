@@ -80,8 +80,8 @@ class ParcelPoint(models.Model):
     block_group = models.ForeignKey(BlockGroup, null=True, blank=True, on_delete=models.DO_NOTHING)
     tract = models.ForeignKey(Tract, null=True, blank=True, on_delete=models.DO_NOTHING)
     geometry = models.PointField(blank=True, null=True, srid=2249)
-    latitude = models.FloatField(null=True)
-    longitude = models.FloatField(null=True)
+    lat = models.FloatField(null=True)
+    lng = models.FloatField(null=True)
 
     class Meta:
         db_table = "parcels_point"
