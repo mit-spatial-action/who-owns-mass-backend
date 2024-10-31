@@ -32,6 +32,7 @@ class MetaCorpSerializer(serializers.ModelSerializer):
     """
 
     related = serializers.SerializerMethodField()
+    owners = serializers.SerializerMethodField()
 
     def get_related(self, obj):
         related = obj.company_set.all()
@@ -44,9 +45,13 @@ class MetaCorpSerializer(serializers.ModelSerializer):
             "companies": related.values("id", "name", "longitude", "latitude"),
         }
 
+    def get_owners(self, obj):
+        return set(obj.owner_set.all().values_list("name", flat=True))
+
+
     class Meta:
         model = MetaCorp
-        fields = ["id", "name", "related"]
+        fields = ["id", "name", "related", "owners", "unit_count", "evictor_type", "area", "units_per_prop", "val_per_prop", "val_per_area"]
 
 
 class MetaCorpListSerializer(serializers.ModelSerializer):
