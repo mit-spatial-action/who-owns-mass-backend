@@ -46,7 +46,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "django_extensions",
     # our apps
-    "who_owns",
+    "who_owns_mass",
 ]
 
 MIDDLEWARE = [

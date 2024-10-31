@@ -17,22 +17,10 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
-from who_owns import views
+from who_owns_mass import views
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    # path("filings/", views.FilingList.as_view()),
-    path("filings/<int:pk>/", views.FilingDetail.as_view()),
-    path("judges/", views.JudgeList.as_view()),
-    path("companies/", views.get_company_by_name, name="get-company-by-name"), 
-    path(
-        "companies/<pk>/portfolio/",
-        views.CompanyPortfolioDetail.as_view(),
-        name="get-company-portfolio",
-    ),
-    path(
-        "companies/<pk>/", views.CompanyDetail.as_view(), name="get-company-details"
-    ),
-    path("meta/<pk>/", views.MetaCorpDetail.as_view(), name="get-metacorp-detials"),
-    path("meta/", views.MetaCorpList.as_view(), name="get-metacorp-detials"),
+    path("site/<pk>/", views.SiteDetail.as_view(), name="site-details"),
+    path("meta/<pk>/", views.MetaCorpDetail.as_view(), name="metacorp-details"),
 ]
