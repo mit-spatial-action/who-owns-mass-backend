@@ -37,6 +37,7 @@ class OwnerSerializer(GeoFeatureModelSerializer):
         return obj.address.parcel.geometry if obj.address and obj.address.parcel else None
 
 class SiteSerializer(GeoFeatureModelSerializer):
+    address = AddressSerializer()
     geometry = GeometrySerializerMethodField()
     class Meta:
         model = Site
