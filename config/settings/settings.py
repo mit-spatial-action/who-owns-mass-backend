@@ -32,8 +32,7 @@ SECRET_KEY = "django-insecure-k-04yjlbzx7_-znq5c**$02$*2v35ex+k7w2=a2ef2(5=5@+6m
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS = ['*']
 
 # Application definition
 
@@ -46,18 +45,35 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "django_extensions",
     # our apps
+    "corsheaders",
     "who_owns_mass",
 ]
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
+    'corsheaders.middleware.CorsMiddleware',
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
+
+
+# CORS_ALLOWED_ORIGINS = [
+#     'http://localhost:5173',
+# ]
+
+CORS_ORIGIN_ALLOW_ALL = True
+
+# CORS_ALLOW_HEADERS = [
+#     'access-control-allow-headers',
+#     'authorization',
+#     'content-type',
+#     'x-requested-with',
+#     # Add other headers you need to allow here
+# ]
 
 ROOT_URLCONF = "config.urls"
 
