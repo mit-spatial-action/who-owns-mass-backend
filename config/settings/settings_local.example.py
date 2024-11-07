@@ -1,14 +1,15 @@
 from .settings import *
 
-# DEDUPLICATIONS_DIR = "/real-dedup-dir"
-
-# DATABASES = {
-#     "default": {
-#         "ENGINE": "django.db.backends.postgresql",
-#         "NAME": "evictions_local",
-#         "USER": "",
-#         "PASSWORD": "",
-#         "HOST": "localhost",
-#         "PORT": "",
-#     }
-# }
+DATABASES = {
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": "your_local_database",
+        "USER": "your_local_user",
+        "PASSWORD": "your_local_password",
+        "HOST": "localhost",
+        "PORT": 0000,
+        "OPTIONS": {
+            "sslmode": 'allow'
+        },
+    }
+}
