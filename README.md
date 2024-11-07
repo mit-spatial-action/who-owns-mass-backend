@@ -7,11 +7,11 @@ Django backend for Who Owns Massachusetts application. It is built to use a Post
 
 ## REST Endpoints
 
-### `site/{id}`
+### `sites/{id}`
 
 Returns `GeoJSON`-formatted details for a given property (which we call a site). JSON keys largely follow [our documenntation here](https://github.com/mit-spatial-action/who-owns-mass-processing/blob/main/DICTIONARY.md).
 
-### `meta/{id}`
+### `metacorps/{id}`
 
 Returns details for a given metacorp (or network of companies). Includes the `sites` property, which is a `GeoJSON`-formatted list of properties owned by a given metacorp. JSON keys largely follow [our documenntation here](https://github.com/mit-spatial-action/who-owns-mass-processing/blob/main/DICTIONARY.md).
 
