@@ -1,26 +1,19 @@
-from django.db.models import F
-from django.contrib.gis.geos import GEOSGeometry
-from django.core.serializers import serialize
-from rest_framework import serializers
-from rest_framework_gis.serializers import GeoFeatureModelSerializer, GeometrySerializerMethodField
+from rest_framework.serializers import (
+    ModelSerializer,
+    SerializerMethodField
+)
+from rest_framework_gis.serializers import (
+    GeoFeatureModelSerializer, 
+    GeometrySerializerMethodField
+)
 from who_owns_mass.models import (
     Site,
     MetaCorp,
-    Company,
-    Municipality,
     Owner,
-    Address,
-    Role,
-    ParcelPoint,
+    Address
 )
 
-class MuniSerializer(GeoFeatureModelSerializer):
-    class Meta:
-        model = Municipality
-        geo_field = "geometry"
-        fields = ["name"]
-
-class AddressSerializer(serializers.ModelSerializer):
+class AddressSerializer(ModelSerializer):
     class Meta:
         model = Address
         fields = ["addr", "muni", "postal", "state"]
@@ -36,7 +29,7 @@ class OwnerSerializer(GeoFeatureModelSerializer):
     def get_geometry(self, obj):
         return obj.address.parcel.geometry if obj.address and obj.address.parcel else None
 
-class SiteSerializer(GeoFeatureModelSerializer):
+class SimpleSiteSerializer(GeoFeatureModelSerializer):
     address = AddressSerializer()
     geometry = GeometrySerializerMethodField()
     class Meta:
@@ -47,9 +40,9 @@ class SiteSerializer(GeoFeatureModelSerializer):
     def get_geometry(self, obj):
         return obj.address.parcel.geometry if obj.address and obj.address.parcel else None
 
-class MetaCorpDetailSerializer(serializers.ModelSerializer):
-    sites = serializers.SerializerMethodField()
-    aliases = serializers.SerializerMethodField()
+class MetaCorpSerializer(ModelSerializer):
+    sites = SerializerMethodField()
+    aliases = SerializerMethodField()
 
     class Meta:
         model = MetaCorp
@@ -57,28 +50,17 @@ class MetaCorpDetailSerializer(serializers.ModelSerializer):
     
     def get_sites(self, obj):
         owners = obj.owners.all()
-        return SiteSerializer([site for owner in owners for site in owner.site.all()], many=True).data
+        return SimpleSiteSerializer([site for owner in owners for site in owner.site.all()], many=True).data
     
     def get_aliases(self, obj):
         owners = obj.owners.all()
         return list(set([owner.name for owner in owners]))
 
-
-class RoleSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Role
-        fields = ["name"]
-
-class CompanySerializer(serializers.Serializer):
-    class Meta:
-        model = Company
-        fields = ["company_type"]
-
-class SiteDetailSerializer(GeoFeatureModelSerializer):
+class SiteSerializer(GeoFeatureModelSerializer):
     address = AddressSerializer()
     geometry = GeometrySerializerMethodField()
-    owners = serializers.SerializerMethodField()
-    metacorp = serializers.SerializerMethodField()
+    owners = SerializerMethodField()
+    metacorp = SerializerMethodField()
 
     class Meta:
         model = Site
@@ -94,4 +76,4 @@ class SiteDetailSerializer(GeoFeatureModelSerializer):
 
     def get_metacorp(self, obj):
         owners = obj.owners.all()
-        return [MetaCorpDetailSerializer(owner.metacorp).data for owner in owners][0]
+        return [MetaCorpSerializer(owner.metacorp).data for owner in owners][0]

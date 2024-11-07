@@ -45,35 +45,19 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "django_extensions",
     # our apps
-    "corsheaders",
+    'rest_framework',
     "who_owns_mass",
 ]
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
-    'corsheaders.middleware.CorsMiddleware',
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
-
-
-# CORS_ALLOWED_ORIGINS = [
-#     'http://localhost:5173',
-# ]
-
-CORS_ORIGIN_ALLOW_ALL = True
-
-# CORS_ALLOW_HEADERS = [
-#     'access-control-allow-headers',
-#     'authorization',
-#     'content-type',
-#     'x-requested-with',
-#     # Add other headers you need to allow here
-# ]
 
 ROOT_URLCONF = "config.urls"
 
@@ -164,6 +148,3 @@ REST_FRAMEWORK = {
         "rest_framework.renderers.BrowsableAPIRenderer",
     ]
 }
-
-# GDAL_LIBRARY_PATH = env("GDAL_LIBRARY_PATH")
-# GEOS_LIBRARY_PATH = env("GEOS_LIBRARY_PATH")

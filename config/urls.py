@@ -15,12 +15,17 @@ Including another URLconf
 """
 
 from django.contrib import admin
-from django.urls import path
+from django.urls import include, path
 
-from who_owns_mass import views
+from rest_framework.routers import DefaultRouter
+
+from who_owns_mass.views import SiteViewset, MetaCorpViewset
+
+router = DefaultRouter()
+router.register(r'sites', SiteViewset, basename='site')
+router.register(r'metacorps', MetaCorpViewset, basename='metacorp')
 
 urlpatterns = [
-    path("admin/", admin.site.urls),
-    path("site/<pk>/", views.SiteDetail.as_view(), name="site-details"),
-    path("meta/<pk>/", views.MetaCorpDetail.as_view(), name="metacorp-details"),
+    path('admin/', admin.site.urls),
+    path('', include(router.urls)),
 ]
