@@ -17,7 +17,7 @@ Returns details for a given metacorp (or network of companies). Includes the `si
 
 ## Set Up the Application
 
-Setting Up Database PostgreSQL
+### Setting Up Database PostgreSQL
 
 The application is built to use a PostgreSQL instance with the PostGIS extension. To create this database, you can either use your preferred GUI (e.g., PGAdmin), or execute the following commands in e.g., `psql`.
 
