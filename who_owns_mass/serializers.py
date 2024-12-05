@@ -32,10 +32,16 @@ class OwnerSerializer(GeoFeatureModelSerializer):
 class SimpleSiteSerializer(GeoFeatureModelSerializer):
     address = AddressSerializer()
     geometry = GeometrySerializerMethodField()
+    owners = SerializerMethodField()
+
     class Meta:
         model = Site
         geo_field = "geometry"
-        fields = ["id", "fy", "ls_date", "ls_price", "bld_area", "res_area", "units", "bld_val", "lnd_val", "luc", "ooc", "muni", "address"]
+        fields = ["id", "fy", "owners", "ls_date", "ls_price", "bld_area", "res_area", "units", "bld_val", "lnd_val", "luc", "ooc", "muni", "address"]
+    
+    def get_owners(self, obj):
+        owners = obj.owners.all()
+        return [OwnerSerializer(owner).data for owner in owners]
     
     def get_geometry(self, obj):
         return obj.address.parcel.geometry if obj.address and obj.address.parcel else None
@@ -55,6 +61,11 @@ class MetaCorpSerializer(ModelSerializer):
     def get_aliases(self, obj):
         owners = obj.owners.all()
         return list(set([owner.name for owner in owners]))
+
+class MetaCorpProps(ModelSerializer):
+    class Meta:
+        model = MetaCorp
+        fields =  "__all__"
 
 class SiteSerializer(GeoFeatureModelSerializer):
     address = AddressSerializer()
@@ -76,4 +87,4 @@ class SiteSerializer(GeoFeatureModelSerializer):
 
     def get_metacorp(self, obj):
         owners = obj.owners.all()
-        return [MetaCorpSerializer(owner.metacorp).data for owner in owners][0]
+        return [MetaCorpProps(owner.metacorp).data for owner in owners][0]
