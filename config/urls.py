@@ -19,11 +19,12 @@ from django.urls import include, path
 
 from rest_framework.routers import DefaultRouter
 
-from who_owns_mass.views import SiteViewset, MetaCorpViewset
+from who_owns_mass.views import SiteViewset, MetaCorpViewset, OwnerViewset
 
 router = DefaultRouter()
 router.register(r'sites', SiteViewset, basename='site')
 router.register(r'metacorps', MetaCorpViewset, basename='metacorp')
+router.register(r'owners', OwnerViewset, basename='owner')
 
 urlpatterns = [
     path('api/auth/', include('rest_framework.urls')),
