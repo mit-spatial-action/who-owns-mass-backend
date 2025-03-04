@@ -16,7 +16,7 @@ from who_owns_mass.models import (
 class AddressSerializer(ModelSerializer):
     class Meta:
         model = Address
-        fields = ["addr", "muni", "postal", "state"]
+        fields = ["addr", "body", "muni", "postal", "state"]
 
 class OwnerSerializer(GeoFeatureModelSerializer):
     address = AddressSerializer()
