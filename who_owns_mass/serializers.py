@@ -29,6 +29,11 @@ class OwnerSerializer(GeoFeatureModelSerializer):
     def get_geometry(self, obj):
         return obj.address.parcel.geometry if obj.address and obj.address.parcel else None
 
+class OwnerNameSerializer(ModelSerializer):
+    class Meta:
+        model = Owner
+        fields = ["name", "metacorp"]
+
 class SimpleSiteSerializer(GeoFeatureModelSerializer):
     address = AddressSerializer()
     geometry = GeometrySerializerMethodField()

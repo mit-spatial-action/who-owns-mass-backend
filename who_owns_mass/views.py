@@ -4,7 +4,7 @@ from rest_framework.pagination import LimitOffsetPagination
 from who_owns_mass.models import MetaCorp, Site, Owner
 from rest_framework import filters
 
-from who_owns_mass.serializers import SiteSerializer, MetaCorpSerializer, OwnerSerializer
+from who_owns_mass.serializers import SiteSerializer, MetaCorpSerializer, OwnerSerializer, OwnerNameSerializer
 
 class SmallResultsSetPagination(LimitOffsetPagination):
     default_limit = 5  # Limit to 5 items per page
@@ -21,8 +21,8 @@ class MetaCorpViewset(ReadOnlyModelViewSet):
     pagination_class = SmallResultsSetPagination
 
 class OwnerViewset(ReadOnlyModelViewSet):
-    queryset = Owner.objects.all()
-    serializer_class = OwnerSerializer
+    queryset = Owner.objects.distinct('name', 'metacorp')
+    serializer_class = OwnerNameSerializer
     pagination_class = SmallResultsSetPagination
     filter_backends = [filters.SearchFilter]
     search_fields = ['name']
