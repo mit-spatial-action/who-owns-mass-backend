@@ -1,6 +1,6 @@
 # Who Owns Massachusetts Backend
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) [![Project Status: WIP – Initial development is in progress, but there has not yet been a stable, usable release suitable for the public.](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostatus.org/#wip)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) [![Project Status: WIP – Initial development is in progress, but there has not yet been a stable, usable release suitable for the public.](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostatus.org/#wip) [![DOI](https://zenodo.org/badge/579087736.svg)](https://zenodo.org/badge/latestdoi/579087736)
 
 Django backend for Who Owns Massachusetts application. It is built to use a PostgreSQL/PostGIS instance. There are two Django apps---the first is `who_owns_mass`, which stores the results of our property [owner deduplication workflow](https://github.com/mit-spatial-action/who-owns-mass-frontend/). The second is `evictions`, which stores data related to summary process filings in Massachusetts. Work on interoperability between these two model sets is ongoing.
 
