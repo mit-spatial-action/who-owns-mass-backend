@@ -7,7 +7,7 @@ Django==5.1.2
 django-cors-headers==4.6.0
 django-environ==0.11.2
 django-extensions==3.2.1
-djangorestframework==3.14.0
+djangorestframework==3.16.0
 djangorestframework-gis==1.0
 exceptiongroup==1.2.1
 executing==1.2.0
