@@ -27,7 +27,7 @@ pure-eval==0.2.2
 Pygments==2.19.1
 pytest==8.2.2
 python-dotenv==1.0.1
-pytz==2024.1
+pytz==2025.2
 six==1.16.0
 sqlparse==0.5.3
 stack-data==0.6.2
