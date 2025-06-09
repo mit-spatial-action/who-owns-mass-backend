@@ -23,7 +23,7 @@ pluggy==1.6.0
 prompt-toolkit==3.0.51
 psycopg2-binary==2.9.10
 ptyprocess==0.7.0
-pure-eval==0.2.2
+pure-eval==0.2.3
 Pygments==2.19.1
 pytest==8.2.2
 python-dotenv==1.1.0
