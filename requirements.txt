@@ -15,7 +15,7 @@ iniconfig==2.1.0
 ipython==8.18.1
 jedi==0.19.2
 matplotlib-inline==0.1.6
-packaging==24.0
+packaging==25.0
 parso==0.8.4
 pexpect==4.9.0
 pickleshare==0.7.5
