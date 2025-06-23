@@ -24,7 +24,7 @@ prompt-toolkit==3.0.51
 psycopg2-binary==2.9.10
 ptyprocess==0.7.0
 pure-eval==0.2.3
-Pygments==2.19.1
+Pygments==2.19.2
 pytest==8.4.0
 python-dotenv==1.1.0
 pytz==2025.2
