@@ -1,5 +1,5 @@
 appnope==0.1.4
-asgiref==3.8.1
+asgiref==3.9.0
 asttokens==3.0.0
 backcall==0.2.0
 decorator==5.2.1
