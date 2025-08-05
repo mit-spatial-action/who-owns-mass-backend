@@ -7,6 +7,8 @@ authors:
 - family-names: "Aizman"
   given-names: "Asya"
   orcid: "https://orcid.org/0000-0002-7528-8585"
+- family-names: "Ravshanova"
+  given-names: "Amira"
 title: "Who Owns Massachusetts Backend"
 version: 1.0.0
 doi: 10.5281/zenodo.15364594
