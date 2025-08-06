@@ -1,32 +1,53 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from typing import List
-from sqlalchemy.orm import Session, selectinload, joinedload
-from whoownsmass.api.deps import to_geojson_feat, to_feat_collect
+from sqlalchemy.orm import Session, selectinload
 
 from whoownsmass.schemas import SiteDetail
 from whoownsmass.models import Owner, Site, Address
-from whoownsmass.api.deps import get_db
+from whoownsmass.api.dependencies import (
+    get_db,
+    to_simple_owner,
+    to_geojson_feat, 
+    to_feat_collect,
+    get_metacorp_base_from_site,
+    get_site_geo,
+    serialize_site,
+)
 
 router = APIRouter()
 
+
 @router.get("/sites", response_model=List[SiteDetail])
 def list_sites(limit: int = 5, offset: int = 0, db: Session = Depends(get_db)):
-    sites = db.query(Site).options(
-        selectinload(Site.owners).selectinload(Owner.metacorp),
-        selectinload(Site.address).selectinload(Address.parcel)
-    ).offset(offset).limit(limit).all()
+    sites = (
+        db.query(Site)
+        .options(
+            selectinload(Site.owners).selectinload(Owner.metacorp),
+            selectinload(Site.address).selectinload(Address.parcel),
+        )
+        .offset(offset)
+        .limit(limit)
+        .all()
+    )
 
-    return [SiteDetail(
-            **SiteDetail.model_validate(s, from_attributes=True).dict(exclude={"owners", "metacorp"}),
+    return [
+        SiteDetail(
+            **SiteDetail.model_validate(s, from_attributes=True).dict(
+                exclude={"owners", "metacorp"}
+            ),
             owners=[to_simple_owner(o) for o in s.owners],
-            metacorp=get_metacorp_base_from_site(s)) for s in sites]
+            metacorp=get_metacorp_base_from_site(s)
+        )
+        for s in sites
+    ]
 
 
 @router.get("/sites.geojson")
 def geojson_sites(limit: int = 5, offset: int = 0, db: Session = Depends(get_db)):
     query = db.query(Site).options(
         selectinload(Site.owners).selectinload(Owner.metacorp),
-        selectinload(Site.address).selectinload(Address.parcel))
+        selectinload(Site.address).selectinload(Address.parcel),
+    )
 
     sites = query.offset(offset).limit(limit).all()
     features = []
@@ -44,14 +65,19 @@ def geojson_sites(limit: int = 5, offset: int = 0, db: Session = Depends(get_db)
                 props["metacorp_name"] = owner.metacorp.name
         features.append(to_geojson_feat(props, geom))
 
-    return to_feat_collect(features, metadata={
-        "limit": limit, "offset": offset, "total": query.count()})
+    return to_feat_collect(
+        features, metadata={"limit": limit, "offset": offset, "total": query.count()}
+    )
 
 
 @router.get("/sites/{site_id}.geojson")
 def geojson_single_site(site_id: int, db: Session = Depends(get_db)):
-    site = db.query(Site).options(
-        selectinload(Site.address).selectinload(Address.parcel)).filter(Site.id == site_id).first()
+    site = (
+        db.query(Site)
+        .options(selectinload(Site.address).selectinload(Address.parcel))
+        .filter(Site.id == site_id)
+        .first()
+    )
 
     if not site:
         raise HTTPException(status_code=404, detail="Site not found")

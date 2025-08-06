@@ -1,42 +1,90 @@
+from typing import List, Optional
+
 from fastapi import APIRouter, Depends, HTTPException, Query
-from whoownsmass.api.deps import to_geojson_feat
+from sqlalchemy.orm import Session, selectinload
+from whoownsmass.models import Owner, Site, Address, MetaCorp
+from whoownsmass.schemas import MetaCorpDetail
+from whoownsmass.api.dependencies import (
+    get_db,
+    get_site_geo,
+    to_feat_collect,
+    to_simple_site,
+    to_simple_owner,
+    serialize_site,
+    to_geojson_feat,
+)
 
 router = APIRouter()
 
-@router.get("/metacorps", response_model=List[MetaCorpDetail])
-def list_metacorps(limit: int = Query(5, ge=1, le=100), offset: int = 0, db: Session = Depends(get_db)):
-    metacorps = db.query(MetaCorp).options(
-        selectinload(MetaCorp.owners).selectinload(Owner.sites).selectinload(Site.address).selectinload(Address.parcel),
-        selectinload(MetaCorp.owners).selectinload(Owner.address)
-    ).offset(offset).limit(limit).all()
 
-    return [MetaCorpDetail(
-            **MetaCorpDetail.model_validate(corp, from_attributes=True).dict(exclude={"owners", "sites", "aliases"}),
+@router.get("/metacorps", response_model=List[MetaCorpDetail])
+def list_metacorps(
+    limit: int = Query(5, ge=1, le=100), offset: int = 0, db: Session = Depends(get_db)
+):
+    metacorps = (
+        db.query(MetaCorp)
+        .options(
+            selectinload(MetaCorp.owners)
+            .selectinload(Owner.sites)
+            .selectinload(Site.address)
+            .selectinload(Address.parcel),
+            selectinload(MetaCorp.owners).selectinload(Owner.address),
+        )
+        .offset(offset)
+        .limit(limit)
+        .all()
+    )
+
+    return [
+        MetaCorpDetail(
+            **MetaCorpDetail.model_validate(corp, from_attributes=True).dict(
+                exclude={"owners", "sites", "aliases"}
+            ),
             owners=[to_simple_owner(o) for o in corp.owners],
             sites=[to_simple_site(s) for o in corp.owners for s in o.sites],
-            aliases=list({o.name for o in corp.owners if o.name})) for corp in metacorps]
+            aliases=list({o.name for o in corp.owners if o.name})
+        )
+        for corp in metacorps
+    ]
+
 
 @router.get("/metacorps/{metacorp_id}", response_model=MetaCorpDetail)
 def get_metacorp(metacorp_id: str, db: Session = Depends(get_db)):
-    corp = db.query(MetaCorp).options(
-        selectinload(MetaCorp.owners).selectinload(Owner.sites).selectinload(Site.address).selectinload(Address.parcel),
-        selectinload(MetaCorp.owners).selectinload(Owner.address)
-    ).filter(MetaCorp.id == metacorp_id).first()
+    corp = (
+        db.query(MetaCorp)
+        .options(
+            selectinload(MetaCorp.owners)
+            .selectinload(Owner.sites)
+            .selectinload(Site.address)
+            .selectinload(Address.parcel),
+            selectinload(MetaCorp.owners).selectinload(Owner.address),
+        )
+        .filter(MetaCorp.id == metacorp_id)
+        .first()
+    )
 
     if not corp:
         raise HTTPException(status_code=404, detail="MetaCorp not found")
 
     return MetaCorpDetail(
-        **MetaCorpDetail.model_validate(corp, from_attributes=True).dict(exclude={"owners", "sites", "aliases"}),
+        **MetaCorpDetail.model_validate(corp, from_attributes=True).dict(
+            exclude={"owners", "sites", "aliases"}
+        ),
         owners=[to_simple_owner(o) for o in corp.owners],
         sites=[to_simple_site(s) for o in corp.owners for s in o.sites],
-        aliases=list({o.name for o in corp.owners if o.name}))
+        aliases=list({o.name for o in corp.owners if o.name})
+    )
+
 
 # GEOJSON ENDPOINTS
 @router.get("/metacorps.geojson")
 def geojson_metacorps(limit: int = 5, offset: int = 0, db: Session = Depends(get_db)):
     query = db.query(MetaCorp).options(
-        selectinload(MetaCorp.owners).selectinload(Owner.sites).selectinload(Site.address).selectinload(Address.parcel))
+        selectinload(MetaCorp.owners)
+        .selectinload(Owner.sites)
+        .selectinload(Site.address)
+        .selectinload(Address.parcel)
+    )
 
     metacorps = query.offset(offset).limit(limit).all()
     features = []
@@ -53,5 +101,6 @@ def geojson_metacorps(limit: int = 5, offset: int = 0, db: Session = Depends(get
                 props["metacorp_name"] = metacorp.name
                 features.append(to_geojson_feat(props, geom))
 
-    return to_feat_collect(features, metadata={
-        "limit": limit, "offset": offset, "total": query.count()})
+    return to_feat_collect(
+        features, metadata={"limit": limit, "offset": offset, "total": query.count()}
+    )
