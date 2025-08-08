@@ -1,4 +1,4 @@
-fastapi
+fastapi[standard]
 uvicorn[standard]
 python-dotenv
 sqlalchemy
@@ -7,3 +7,6 @@ geoalchemy2
 pydantic
 pydantic-settings
 aiofiles
+shapely
+pyjwt
+passlib[bcrypt]

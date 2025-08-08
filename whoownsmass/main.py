@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from whoownsmass.api.v1.api import router
-# from who_owns_mass_fastapi.views import router
+
 
 app = FastAPI(title="Who Owns Massachusetts API")
 
