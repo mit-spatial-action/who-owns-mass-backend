@@ -10,3 +10,6 @@ aiofiles
 shapely
 pyjwt
 passlib[bcrypt]
+pwdlib
+pwdlib[argon2]
+python-multipart
