@@ -1,6 +1,6 @@
 appnope==0.1.4
 asgiref==3.10.0
-asttokens==3.0.0
+asttokens==3.0.1
 backcall==0.2.0
 decorator==5.2.1
 Django==5.1.14
