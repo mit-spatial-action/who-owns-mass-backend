@@ -15,8 +15,9 @@ from pathlib import Path
 import environ
 from django.core.management.utils import get_random_secret_key
 
+import environ
 env = environ.Env()
-environ.Env.read_env()
+env.read_env()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
