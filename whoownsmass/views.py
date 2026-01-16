@@ -1,10 +1,10 @@
 from rest_framework import permissions
 from rest_framework.viewsets import ReadOnlyModelViewSet
 from rest_framework.pagination import LimitOffsetPagination
-from who_owns_mass.models import MetaCorp, Site, Owner
+from whoownsmass.models import MetaCorp, Site, Owner
 from rest_framework import filters
 
-from who_owns_mass.serializers import SiteSerializer, MetaCorpSerializer, OwnerSerializer, OwnerNameSerializer
+from whoownsmass.serializers import SiteSerializer, MetaCorpSerializer, OwnerSerializer, OwnerNameSerializer
 
 class SmallResultsSetPagination(LimitOffsetPagination):
     default_limit = 5  # Limit to 5 items per page

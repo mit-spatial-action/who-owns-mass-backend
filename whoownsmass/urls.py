@@ -19,7 +19,7 @@ from django.urls import include, path
 
 from rest_framework.routers import DefaultRouter
 
-from who_owns_mass.views import SiteViewset, MetaCorpViewset, OwnerViewset
+from whoownsmass.views import SiteViewset, MetaCorpViewset, OwnerViewset
 
 router = DefaultRouter()
 router.register(r'sites', SiteViewset, basename='site')

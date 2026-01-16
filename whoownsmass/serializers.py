@@ -6,7 +6,7 @@ from rest_framework_gis.serializers import (
     GeoFeatureModelSerializer, 
     GeometrySerializerMethodField
 )
-from who_owns_mass.models import (
+from whoownsmass.models import (
     Site,
     MetaCorp,
     Owner,

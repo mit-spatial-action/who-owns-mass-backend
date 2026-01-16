@@ -10,28 +10,17 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 
+import os
 from pathlib import Path
 import environ
-import os
+from django.core.management.utils import get_random_secret_key
 
 env = environ.Env()
-# reading .env file
 environ.Env.read_env()
-
-# Raises django's ImproperlyConfigured exception if SECRET_KEY not in os.environ
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
-
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
-from dotenv import load_dotenv
-load_dotenv()
-
-SECRET_KEY = os.getenv('SECRET_KEY')
+SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", get_random_secret_key())
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -54,7 +43,7 @@ INSTALLED_APPS = [
     # our apps
     'rest_framework.authtoken',
     'rest_framework',
-    "who_owns_mass",
+    "whoownsmass",
 ]
 
 MIDDLEWARE = [
@@ -67,7 +56,7 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-ROOT_URLCONF = "config.urls"
+ROOT_URLCONF = "whoownsmass.urls"
 
 TEMPLATES = [
     {
@@ -85,7 +74,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = "config.wsgi.application"
+WSGI_APPLICATION = "whoownsmass.wsgi.application"
 
 
 # Database
