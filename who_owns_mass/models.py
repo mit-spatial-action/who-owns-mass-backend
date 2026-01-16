@@ -1,5 +1,4 @@
 from django.contrib.gis.db import models
-from django import forms
 
 class MetaCorp(models.Model):
     """
