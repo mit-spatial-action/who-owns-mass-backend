@@ -13,7 +13,6 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 import os
 from pathlib import Path
 import environ
-from django.core.management.utils import get_random_secret_key
 
 import environ
 env = environ.Env()
@@ -21,13 +20,14 @@ env.read_env()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", get_random_secret_key())
+SECRET_KEY = env("DJANGO_SECRET_KEY")
 
-DEBUG = os.getenv("DEBUG", "False") == "True"
+DEBUG = env.bool("DEBUG")
 
-ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS", "127.0.0.1,localhost").split(",")
-
-# Application definition
+ALLOWED_HOSTS = env.list(
+    env("DJANGO_ALLOWED_HOSTS"),
+    default=["127.0.0.1", "localhost"],
+)
 
 INSTALLED_APPS = [
     "django.contrib.admin",
