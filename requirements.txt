@@ -16,7 +16,7 @@ ipython==9.9.0
 jedi==0.19.2
 matplotlib-inline==0.1.7
 packaging==25.0
-parso==0.8.4
+parso==0.8.5
 pexpect==4.9.0
 pickleshare==0.7.5
 pluggy==1.6.0
