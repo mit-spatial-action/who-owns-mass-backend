@@ -1,0 +1,32 @@
+name: Deploy to Digital Ocean
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        
+      - name: Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.DO_SSH_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan -H ${{ secrets.DO_HOST }} >> ~/.ssh/known_hosts      
+      - name: Deploy to server
+        run: |
+          ssh ${{ secrets.DO_USER }}@${{ secrets.DO_HOST }} << 'EOF'
+            cd ${{ secrets.DO_APP_DIR }} &&
+            git pull origin main &&
+            pip install -r requirements.txt &&
+            python manage.py collectstatic --noinput &&
+            python manage.py migrate &&
+            sudo systemctl restart gunicorn &&
+            sudo systemctl daemon-reload &&
+            sudo systemctl restart nginx
+          EOF
