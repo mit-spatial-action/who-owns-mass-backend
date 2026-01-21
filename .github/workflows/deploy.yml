@@ -1,4 +1,6 @@
 name: Deploy to Digital Ocean
+permissions:
+  contents: read
 
 on:
   push:
