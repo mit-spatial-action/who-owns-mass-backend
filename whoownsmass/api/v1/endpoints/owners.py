@@ -18,7 +18,7 @@ from whoownsmass.schemas import OwnerDetail
 router = APIRouter()
 
 
-@router.get("/owners", response_model=List[OwnerDetail])
+@router.get("/", response_model=List[OwnerDetail])
 def list_owners(
     name: Optional[str] = None,
     limit: int = 5,
@@ -62,7 +62,7 @@ def list_owners(
 # #################
 
 
-@router.get("/owners/{owner_id}", response_model=OwnerDetail)
+@router.get("/{owner_id}", response_model=OwnerDetail)
 def get_owner(owner_id: int, db: Session = Depends(get_db)):
     owner = (
         db.query(Owner)
@@ -112,7 +112,7 @@ def geojson_owners(limit: int = 5, offset: int = 0, db: Session = Depends(get_db
     )
 
 
-@router.get("/owners/{owner_id}/sites.geojson")
+@router.get("/{owner_id}/sites.geojson")
 def geojson_sites_by_owner(owner_id: int, db: Session = Depends(get_db)):
     owner = (
         db.query(Owner)

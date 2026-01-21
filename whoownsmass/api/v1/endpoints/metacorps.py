@@ -17,7 +17,7 @@ from whoownsmass.api.dependencies import (
 router = APIRouter()
 
 
-@router.get("/metacorps", response_model=List[MetaCorpDetail])
+@router.get("/", response_model=List[MetaCorpDetail])
 def list_metacorps(
     limit: int = Query(5, ge=1, le=100), offset: int = 0, db: Session = Depends(get_db)
 ):
@@ -48,7 +48,7 @@ def list_metacorps(
     ]
 
 
-@router.get("/metacorps/{metacorp_id}", response_model=MetaCorpDetail)
+@router.get("/{metacorp_id}", response_model=MetaCorpDetail)
 def get_metacorp(metacorp_id: str, db: Session = Depends(get_db)):
     corp = (
         db.query(MetaCorp)

@@ -7,7 +7,7 @@ from whoownsmass.models import Owner, Site, Address
 from whoownsmass.api.dependencies import (
     get_db,
     to_simple_owner,
-    to_geojson_feat, 
+    to_geojson_feat,
     to_feat_collect,
     get_metacorp_base_from_site,
     get_site_geo,
@@ -17,7 +17,7 @@ from whoownsmass.api.dependencies import (
 router = APIRouter()
 
 
-@router.get("/sites", response_model=List[SiteDetail])
+@router.get("/", response_model=List[SiteDetail])
 def list_sites(limit: int = 5, offset: int = 0, db: Session = Depends(get_db)):
     sites = (
         db.query(Site)
@@ -70,7 +70,7 @@ def geojson_sites(limit: int = 5, offset: int = 0, db: Session = Depends(get_db)
     )
 
 
-@router.get("/sites/{site_id}.geojson")
+@router.get("/{site_id}.geojson")
 def geojson_single_site(site_id: int, db: Session = Depends(get_db)):
     site = (
         db.query(Site)
