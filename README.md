@@ -5,7 +5,7 @@
 Django backend for Who Owns Massachusetts application. It is built to use a PostgreSQL/PostGIS instance. There are two Django apps---the first is `who_owns_mass`, which stores the results of our property [owner deduplication workflow](https://github.com/mit-spatial-action/who-owns-mass-frontend/). The second is `evictions`, which stores data related to summary process filings in Massachusetts. Work on interoperability between these two model sets is ongoing.
 
 ## DB Schema
-![mass_evictions schema](./schema.png)
+![mass_evictions schema](./media/schema.png)
 
 ## REST Endpoints
 
