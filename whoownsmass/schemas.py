@@ -104,3 +104,25 @@ class OwnerDetail(OwnerBase):
 
     class Config:
         from_attributes = True
+
+
+# class UserBase(BaseModel):
+#     username: str
+#     email: str | None = None
+#     full_name: str | None = None
+#     is_active: bool
+#     is_admin: bool
+
+#     class Config:
+#         from_attributes = True
+
+
+# class UserCreate(BaseModel):
+#     username: str
+#     email: str | None = None
+#     full_name: str | None = None
+#     password: str
+
+
+# class UserPublic(UserBase):
+#     pass

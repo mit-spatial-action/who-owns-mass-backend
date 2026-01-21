@@ -1,6 +1,5 @@
 # database tables and relationships using sqlalchemy
 
-
 from sqlalchemy import Column, String, Integer, Float, Boolean, Date, ForeignKey, Table, DECIMAL
 from sqlalchemy.orm import relationship, declarative_base
 from geoalchemy2 import Geometry
@@ -159,3 +158,14 @@ class Officer(Base):
     metacorp = relationship("MetaCorp", back_populates="officers")
     address = relationship("Address", back_populates="officers")
     roles = relationship("Role", secondary=officer_to_role, back_populates="officers")
+
+
+# class User(Base):
+#     __tablename__ = "user"
+#     id = Column(Integer, primary_key=True, index=True)
+#     username = Column(String(150), unique=True, index=True, nullable=False)
+#     email = Column(String(255), unique=True, index=True)
+#     full_name = Column(String(255))
+#     hashed_password = Column(String(255), nullable=False)
+#     is_active = Column(Boolean, default=True, nullable=False)
+#     is_admin = Column(Boolean, default=False, nullable=False)

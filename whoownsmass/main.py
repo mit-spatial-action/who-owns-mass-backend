@@ -22,7 +22,7 @@ def root():
 
 #### Authorization
 
-# get SECRET_KEY but running openssl rand -hex 32 in terminal
+# get SECRET_KEY by running openssl rand -hex 32 in terminal
 SECRET_KEY = "dc7dca188c27df043b0c00e2e72ccbe6aa51c245575769503f364b680d89d826"
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60
